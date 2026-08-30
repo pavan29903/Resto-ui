@@ -1,0 +1,286 @@
+/* ============================================================================
+   MenuSnap design system — "Steel & Indigo"
+
+   Grounded in the subject: the brushed steel of a thali and tumbler gives the
+   cool, blue-biased neutrals; indigo (block-print dye) gives the accent. Cool
+   neutrals are deliberate — they make warm food photography advance off the
+   page, where a cream ground would flatten it.
+
+   Colour is defined ONCE per token, at :root and in the two theme overrides.
+   Components only ever read var(--token), never a literal, so both themes
+   resolve as a complete set.
+   ========================================================================= */
+
+:root {
+  /* Ground / surfaces — steel greys, biased blue rather than neutral */
+  --ground: #f3f5f8;
+  --surface: #ffffff;
+  --surface-sunk: #eaeef3;
+  --line: #dbe1e9;
+  --line-strong: #c3ccd8;
+
+  /* Ink */
+  --ink: #13161d;
+  --ink-soft: #4a5361;
+  --ink-muted: #6f7987;
+
+  /* Accent — indigo */
+  --accent: #2f3aa8;
+  --accent-hover: #262e88;
+  --accent-soft: #eceefb;
+  --accent-ink: #ffffff;
+
+  /* Semantic — deliberately separate from the accent.
+     Veg / non-veg follow the FSSAI marks every Indian diner already reads. */
+  --veg: #1b8a3f;
+  --nonveg: #8c3b14;
+  --warn: #9a5b06;
+  --danger: #b3261e;
+  --danger-soft: #fdeceb;
+
+  /* Elevation — soft and low; steel doesn't cast dramatic shadows */
+  --shadow-sm: 0 1px 2px rgb(19 22 29 / 0.05);
+  --shadow-md: 0 4px 16px -4px rgb(19 22 29 / 0.12);
+
+  /* Geometry — restrained. Not rounded-2xl on everything. */
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 14px;
+
+  /* Type scale — 1.25 ratio from 16px */
+  --t-xs: 0.75rem;
+  --t-sm: 0.875rem;
+  --t-base: 1rem;
+  --t-md: 1.125rem;
+  --t-lg: 1.375rem;
+  --t-xl: 1.75rem;
+  --t-2xl: 2.25rem;
+  --t-3xl: 3rem;
+
+  --measure: 34rem;
+}
+
+/* System-dark (no explicit choice stamped) — guarded so an explicit light wins */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0e1116;
+    --surface: #161a22;
+    --surface-sunk: #1d222c;
+    --line: #262d39;
+    --line-strong: #38414f;
+
+    --ink: #e9edf3;
+    --ink-soft: #aab3c0;
+    --ink-muted: #808b9a;
+
+    --accent: #949cf7;
+    --accent-hover: #adb3f9;
+    --accent-soft: #1b2140;
+    --accent-ink: #10131c;
+
+    --veg: #4ec97a;
+    --nonveg: #d98155;
+    --warn: #e0a23c;
+    --danger: #f2837c;
+    --danger-soft: #2a1615;
+
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-md: 0 4px 18px -4px rgb(0 0 0 / 0.55);
+  }
+}
+
+/* Explicit dark choice — wins over a light OS */
+:root[data-theme="dark"] {
+  --ground: #0e1116;
+  --surface: #161a22;
+  --surface-sunk: #1d222c;
+  --line: #262d39;
+  --line-strong: #38414f;
+
+  --ink: #e9edf3;
+  --ink-soft: #aab3c0;
+  --ink-muted: #808b9a;
+
+  --accent: #949cf7;
+  --accent-hover: #adb3f9;
+  --accent-soft: #1b2140;
+  --accent-ink: #10131c;
+
+  --veg: #4ec97a;
+  --nonveg: #d98155;
+  --warn: #e0a23c;
+  --danger: #f2837c;
+  --danger-soft: #2a1615;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 18px -4px rgb(0 0 0 / 0.55);
+}
+
+/* --------------------------------------------------------------------- base */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: var(--t-base);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  text-wrap: balance;
+  line-height: 1.15;
+}
+
+p {
+  margin: 0;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------------------------------------------------------------- primitives */
+
+.display {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.eyebrow {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.shell {
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2rem);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+}
+
+.btn {
+  font: inherit;
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  padding: 0.7em 1.3em;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn--primary:not(:disabled):hover {
+  background: var(--accent-hover);
+}
+
+.btn--quiet {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+
+.btn--quiet:not(:disabled):hover {
+  background: var(--surface-sunk);
+}
+
+.field {
+  font: inherit;
+  width: 100%;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  padding: 0.5em 0.7em;
+}
+
+.field:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* The diet mark — the FSSAI square every Indian diner already parses.
+   Semantic colour, never the accent. */
+.diet {
+  inline-size: 0.85em;
+  block-size: 0.85em;
+  border: 1.5px solid currentColor;
+  border-radius: 2px;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.diet::after {
+  content: "";
+  inline-size: 0.4em;
+  block-size: 0.4em;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.diet--veg {
+  color: var(--veg);
+}
+
+.diet--nonveg {
+  color: var(--nonveg);
+}

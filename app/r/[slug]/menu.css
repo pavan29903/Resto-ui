@@ -1,0 +1,417 @@
+/* The diner menu. Read one-handed, at a table, on a cheap Android screen,
+   often in low light. Every decision below answers to that. */
+
+.menu-page {
+  --gutter: clamp(0.9rem, 4vw, 1.5rem);
+  min-block-size: 100dvh;
+  /* Clear the fixed order bar, plus the phone's home indicator. */
+  padding-block-end: calc(5.5rem + env(safe-area-inset-bottom));
+}
+
+/* --- masthead ------------------------------------------------------------ */
+
+.masthead {
+  background: var(--surface);
+  border-block-end: 1px solid var(--line);
+  padding-block: clamp(1.1rem, 4vw, 1.6rem) clamp(0.9rem, 3vw, 1.1rem);
+}
+
+.masthead__inner {
+  max-inline-size: var(--measure);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  display: flex;
+  align-items: center;
+  gap: clamp(0.7rem, 3vw, 1rem);
+}
+
+/* The restaurant's own logo. Contained, never cropped — a wordmark logo is
+   usually wide, and object-fit: cover would slice the ends off it. */
+.masthead__logo {
+  flex: none;
+  inline-size: clamp(3rem, 14vw, 3.75rem);
+  block-size: clamp(3rem, 14vw, 3.75rem);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--surface-sunk);
+  display: grid;
+  place-items: center;
+}
+
+.masthead__logo img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+
+.masthead__text {
+  min-inline-size: 0;
+  flex: 1;
+}
+
+.masthead__name {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.5rem, 7vw, var(--t-2xl));
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  /* A long restaurant name must wrap, not overflow a 360px phone. */
+  overflow-wrap: anywhere;
+}
+
+.masthead__meta {
+  margin-block-start: 0.2rem;
+  font-size: var(--t-sm);
+  color: var(--ink-muted);
+}
+
+/* --- theme toggle --------------------------------------------------------- */
+
+.themetoggle {
+  flex: none;
+  align-self: flex-start;
+  /* 44px minimum: this is a thumb target, not a mouse target. */
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  display: grid;
+  place-items: center;
+  font-size: 1.15rem;
+  line-height: 1;
+  color: var(--ink-soft);
+  background: var(--surface-sunk);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.themetoggle:hover {
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+
+.themetoggle__icon {
+  display: block;
+}
+
+/* --- section nav: a 60-dish menu has to be thumb-navigable --------------- */
+
+.sectionnav {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-block-end: 1px solid var(--line);
+}
+
+.sectionnav__scroll {
+  max-inline-size: var(--measure);
+  margin-inline: auto;
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding: 0.55rem var(--gutter);
+  scrollbar-width: none;
+  /* Chips snap so a thumb-flick lands on a chip, not between two. */
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+}
+
+.sectionnav__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.sectionnav__chip {
+  flex: none;
+  scroll-snap-align: start;
+  min-block-size: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  background: var(--surface-sunk);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.4rem 0.85rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.sectionnav__chip:hover {
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+
+/* --- sections ------------------------------------------------------------ */
+
+.menu-body {
+  max-inline-size: var(--measure);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.section {
+  padding-block-start: 2.4rem;
+  scroll-margin-block-start: 3.5rem;
+}
+
+.section__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  margin-block-end: 1rem;
+}
+
+.section__name {
+  font-size: var(--t-sm);
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.section__rule {
+  flex: 1;
+  block-size: 1px;
+  background: var(--line);
+}
+
+.section__count {
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+}
+
+/* --- the dish grid -------------------------------------------------------
+   Two dishes across on a phone: a menu is browsed by looking, and a grid puts
+   twice as many photographs in front of the eye per screen as a list does.
+   The first dish of each section spans both columns so every section opens
+   with one dish shown properly. */
+
+.dishgrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.6rem, 2.5vw, 0.9rem);
+  align-items: start;
+}
+
+.dishcard {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.dishcard--feature {
+  grid-column: 1 / -1;
+}
+
+.dishcard__figure {
+  aspect-ratio: 1 / 1;
+  background: var(--surface-sunk);
+  overflow: hidden;
+}
+
+/* The feature card is wide, so a square crop would be a very tall image. */
+.dishcard--feature .dishcard__figure {
+  aspect-ratio: 16 / 9;
+}
+
+.dishcard__figure img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.dishcard__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.65rem 0.7rem 0.75rem;
+  flex: 1;
+}
+
+.dishcard--feature .dishcard__body {
+  padding: 0.8rem 0.9rem 0.9rem;
+}
+
+.dishcard__name {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.dishcard--feature .dishcard__name {
+  font-size: var(--t-md);
+}
+
+/* The diet mark sits on the first line of a wrapping name, not the middle. */
+.dishcard__name .diet {
+  position: relative;
+  inset-block-start: 0.05em;
+}
+
+.dishcard__desc {
+  font-size: var(--t-xs);
+  font-weight: 300;
+  color: var(--ink-soft);
+  /* Two lines keeps every card in a row the same height without a hard crop
+     mid-word; the full description still reads on the feature card. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dishcard--feature .dishcard__desc {
+  font-size: var(--t-sm);
+  -webkit-line-clamp: 3;
+}
+
+.dishcard__foot {
+  margin-block-start: auto;
+  padding-block-start: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dishcard__price {
+  font-size: var(--t-base);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.dishcard--feature .dishcard__price {
+  font-size: var(--t-md);
+}
+
+.dishcard__price--none {
+  color: var(--ink-muted);
+  font-weight: 400;
+  font-size: var(--t-sm);
+}
+
+/* --- footer + order bar --------------------------------------------------- */
+
+.menu-foot {
+  max-inline-size: var(--measure);
+  margin-inline: auto;
+  padding: 2.5rem var(--gutter) 0;
+  text-align: center;
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+}
+
+.menu-foot a {
+  color: var(--ink-soft);
+}
+
+.orderbar {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  backdrop-filter: blur(10px);
+  border-block-start: 1px solid var(--line);
+  padding: 0.7rem var(--gutter) calc(0.7rem + env(safe-area-inset-bottom));
+}
+
+.orderbar__inner {
+  max-inline-size: var(--measure);
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.orderbar__hint {
+  font-size: var(--t-sm);
+  color: var(--ink-muted);
+  min-inline-size: 0;
+}
+
+.orderbar__cta {
+  margin-inline-start: auto;
+  flex: none;
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* --- empty state ---------------------------------------------------------- */
+
+.empty {
+  --gutter: clamp(0.9rem, 4vw, 1.5rem);
+  max-inline-size: var(--measure);
+  margin: 4rem auto;
+  padding-inline: var(--gutter);
+  text-align: center;
+}
+
+.empty__title {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: var(--t-xl);
+  margin-block-end: 0.5rem;
+}
+
+.empty__body {
+  color: var(--ink-soft);
+  font-size: var(--t-sm);
+}
+
+
+/* --- narrow phones (360px class of device) -------------------------------- */
+
+@media (max-width: 26rem) {
+  .dishcard__body {
+    padding: 0.55rem 0.6rem 0.65rem;
+  }
+
+  /* Descriptions cost more room than they earn at this width. */
+  .dishcard:not(.dishcard--feature) .dishcard__desc {
+    display: none;
+  }
+
+  /* The hint competes with the button for room; the button wins. */
+  .orderbar__hint {
+    display: none;
+  }
+
+  .orderbar__cta {
+    margin-inline-start: 0;
+    inline-size: 100%;
+    text-align: center;
+  }
+}
+
+/* --- wide screens: the menu stays a single readable column ---------------- */
+
+@media (min-width: 48rem) {
+  .menu-page {
+    --measure: 46rem;
+  }
+
+  .dishgrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* Still the width of the grid, just now across three columns. */
+  .dishcard--feature {
+    grid-column: 1 / -1;
+  }
+
+  .dishcard--feature .dishcard__figure {
+    aspect-ratio: 21 / 9;
+  }
+}
