@@ -21,7 +21,7 @@ const body = Mukta({
 });
 
 export const metadata: Metadata = {
-  title: "MenuSnap",
+  title: "RestoFood",
   description:
     "Turn a paper menu card into a menu people can order from — photo in, QR out.",
 };
@@ -42,7 +42,7 @@ export const viewport = {
    most noticeable, in a dark restaurant. */
 const NO_FLASH = `
 try {
-  var t = localStorage.getItem('menusnap-theme');
+  var t = localStorage.getItem('restofood-theme');
   if (t === 'light' || t === 'dark') {
     document.documentElement.setAttribute('data-theme', t);
   }

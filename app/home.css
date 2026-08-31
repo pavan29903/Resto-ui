@@ -1,0 +1,354 @@
+/* The landing page.
+   Read by a cafe owner, usually on a phone, deciding in about twenty seconds
+   whether this is worth their evening. So: show the transformation, say what
+   it costs them in effort, and get out of the way. */
+
+.home {
+  --gutter: clamp(1rem, 5vw, 2rem);
+  min-block-size: 100dvh;
+}
+
+/* --- nav ------------------------------------------------------------------ */
+
+.homenav {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--ground) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-block-end: 1px solid var(--line);
+}
+
+.homenav__inner {
+  max-inline-size: 68rem;
+  margin-inline: auto;
+  padding: 0.85rem var(--gutter);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.homenav__mark {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: var(--t-lg);
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  margin-inline-end: auto;
+}
+
+/* --- hero ----------------------------------------------------------------- */
+
+.hero {
+  max-inline-size: 68rem;
+  margin-inline: auto;
+  padding: clamp(2.5rem, 8vw, 5rem) var(--gutter) clamp(2rem, 6vw, 4rem);
+  display: grid;
+  gap: clamp(2.5rem, 7vw, 4rem);
+  align-items: center;
+}
+
+@media (min-width: 56rem) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+  }
+}
+
+.hero__title {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(2.35rem, 7.5vw, 4rem);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  margin-block: 0.6rem 1rem;
+}
+
+.hero__title em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.hero__lede {
+  font-size: clamp(var(--t-base), 2.4vw, var(--t-md));
+  font-weight: 300;
+  color: var(--ink-soft);
+  max-inline-size: 34rem;
+}
+
+.hero__cta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-block-start: 1.75rem;
+}
+
+.hero__note {
+  margin-block-start: 1rem;
+  font-size: var(--t-sm);
+  color: var(--ink-muted);
+}
+
+/* --- the transformation: a paper card becoming a phone -------------------- */
+
+.transform {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-block-size: 21rem;
+}
+
+/* The paper menu card: greasy, laminated, slightly askew — the thing the
+   owner is holding right now. */
+.paper {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inline-size: min(15rem, 46%);
+  aspect-ratio: 3 / 4;
+  background: #fbf7ef;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 3px;
+  box-shadow: 0 10px 26px -12px rgb(15 20 30 / 0.45);
+  transform: rotate(-7deg);
+  padding: 1rem 0.85rem;
+  overflow: hidden;
+}
+
+.paper::after {
+  /* A faint stain — the detail that says "this lives on a table". */
+  content: "";
+  position: absolute;
+  inset-block-end: 12%;
+  inset-inline-end: -8%;
+  inline-size: 45%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(150 110 60 / 0.14), transparent 70%);
+}
+
+.paper__title {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 0.8rem;
+  color: #2b2317;
+  text-align: center;
+  margin-block-end: 0.5rem;
+}
+
+.paper__line {
+  block-size: 3px;
+  border-radius: 2px;
+  background: #cbbda4;
+  margin-block-end: 0.42rem;
+}
+
+.paper__line--head {
+  background: #a8702f;
+  inline-size: 42%;
+  margin-block: 0.6rem 0.5rem;
+}
+
+/* The phone: the same menu, in the diner's hand. */
+.phone {
+  position: relative;
+  inline-size: min(13.5rem, 44%);
+  margin-inline-start: auto;
+  aspect-ratio: 9 / 18;
+  background: var(--surface);
+  border: 8px solid #14171f;
+  border-radius: 1.9rem;
+  box-shadow: 0 22px 45px -18px rgb(15 20 30 / 0.5);
+  overflow: hidden;
+  padding: 0.55rem 0.5rem;
+}
+
+.phone__bar {
+  inline-size: 32%;
+  block-size: 4px;
+  border-radius: 999px;
+  background: #14171f;
+  margin: 0 auto 0.5rem;
+}
+
+.phone__name {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 0.72rem;
+  margin-block-end: 0.4rem;
+}
+
+.phone__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem;
+}
+
+.phone__card {
+  border-radius: 5px;
+  overflow: hidden;
+  background: var(--surface-sunk);
+  border: 1px solid var(--line);
+}
+
+.phone__shot {
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, #c9793f, #9c4a2a);
+}
+
+.phone__shot--b { background: linear-gradient(135deg, #7d9a52, #4f7a3d); }
+.phone__shot--c { background: linear-gradient(135deg, #d0a24a, #b06a2c); }
+.phone__shot--d { background: linear-gradient(135deg, #8f6ba8, #5c4a7d); }
+
+.phone__meta {
+  padding: 0.24rem 0.3rem 0.3rem;
+}
+
+.phone__l {
+  block-size: 3px;
+  border-radius: 2px;
+  background: var(--line-strong);
+  margin-block-end: 3px;
+}
+
+.phone__l--price {
+  inline-size: 40%;
+  background: var(--accent);
+}
+
+/* The arrow that makes it one motion rather than two pictures. */
+.transform__arrow {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  inline-size: 2.6rem;
+  block-size: 2.6rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 1.1rem;
+  box-shadow: 0 6px 18px -6px rgb(47 58 168 / 0.65);
+}
+
+/* --- steps ---------------------------------------------------------------- */
+
+.band {
+  border-block-start: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.band__inner {
+  max-inline-size: 68rem;
+  margin-inline: auto;
+  padding: clamp(2.5rem, 7vw, 4.5rem) var(--gutter);
+}
+
+.band__title {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.6rem, 4.5vw, 2.35rem);
+  margin-block-end: 0.5rem;
+}
+
+.band__lede {
+  color: var(--ink-soft);
+  font-weight: 300;
+  max-inline-size: 38rem;
+}
+
+.steps {
+  display: grid;
+  gap: clamp(1.25rem, 3vw, 2rem);
+  margin-block-start: 2.25rem;
+}
+
+@media (min-width: 48rem) {
+  .steps {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Numbered because this genuinely is a sequence — you cannot check the prices
+   before the card has been read. */
+.step__n {
+  font-variant-numeric: tabular-nums;
+  font-size: var(--t-sm);
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+}
+
+.step__h {
+  font-size: var(--t-md);
+  font-weight: 600;
+  margin-block: 0.4rem 0.35rem;
+}
+
+.step__p {
+  color: var(--ink-soft);
+  font-weight: 300;
+  font-size: var(--t-sm);
+}
+
+/* --- features ------------------------------------------------------------- */
+
+.feats {
+  display: grid;
+  gap: 1rem;
+  margin-block-start: 2.25rem;
+}
+
+@media (min-width: 40rem) {
+  .feats { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 64rem) {
+  .feats { grid-template-columns: repeat(4, 1fr); }
+}
+
+.feat {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 1.15rem;
+  background: var(--ground);
+}
+
+.feat__h {
+  font-weight: 600;
+  margin-block-end: 0.3rem;
+}
+
+.feat__p {
+  font-size: var(--t-sm);
+  font-weight: 300;
+  color: var(--ink-soft);
+}
+
+/* --- closing -------------------------------------------------------------- */
+
+.close {
+  max-inline-size: 68rem;
+  margin-inline: auto;
+  padding: clamp(3rem, 8vw, 5rem) var(--gutter);
+  text-align: center;
+}
+
+.close__title {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.8rem, 5.5vw, 2.9rem);
+  margin-block-end: 0.7rem;
+}
+
+.close__p {
+  color: var(--ink-soft);
+  font-weight: 300;
+  margin-inline: auto;
+  max-inline-size: 32rem;
+}
+
+.homefoot {
+  border-block-start: 1px solid var(--line);
+  padding: 1.5rem var(--gutter);
+  text-align: center;
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+}

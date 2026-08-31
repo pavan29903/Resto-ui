@@ -51,8 +51,8 @@ export default async function MenuPage({ params }: Params) {
           restaurant, photograph your menu card and publish it — it takes a minute.
         </p>
         <p style={{ marginBlockStart: "1.25rem" }}>
-          <Link className="btn btn--primary" href="/" style={{ textDecoration: "none" }}>
-            Open MenuSnap
+          <Link className="btn btn--primary" href="/dashboard" style={{ textDecoration: "none" }}>
+            Open RestoFood
           </Link>
         </p>
       </main>
@@ -181,7 +181,7 @@ export default async function MenuPage({ params }: Params) {
         })}
 
         <p className="menu-foot">
-          Dish photos are illustrative. Menu by <Link href="/">MenuSnap</Link>.
+          Dish photos are illustrative. Menu by <Link href="/">RestoFood</Link>.
         </p>
       </main>
 

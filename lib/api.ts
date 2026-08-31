@@ -6,6 +6,7 @@ import type {
   PublicMenu,
   PublishJob,
   RestaurantSummary,
+  DishPhoto,
 } from "./types";
 
 export const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8100";
@@ -97,7 +98,11 @@ export async function createRestaurant(input: {
 
 export async function getRestaurant(
   id: string,
-): Promise<{ restaurant: RestaurantSummary; menu: Menu }> {
+): Promise<{
+  restaurant: RestaurantSummary;
+  menu: Menu;
+  photos: Record<string, DishPhoto>;
+}> {
   return unwrap(
     await fetch(`${API}/api/restaurants/${id}`, {
       headers: await authHeader(),
@@ -108,7 +113,13 @@ export async function getRestaurant(
 
 export async function updateRestaurant(
   id: string,
-  input: { name?: string; menu?: Menu; whatsapp?: string | null },
+  input: {
+    name?: string;
+    menu?: Menu;
+    whatsapp?: string | null;
+    /** Changing this changes the public address — printed QR codes break. */
+    slug?: string;
+  },
 ): Promise<RestaurantSummary> {
   return unwrap(
     await fetch(`${API}/api/restaurants/${id}`, {
@@ -177,6 +188,49 @@ export async function uploadLogo(id: string, file: File): Promise<{ logo_url: st
 export async function removeLogo(id: string): Promise<void> {
   await unwrap<void>(
     await fetch(`${API}/api/restaurants/${id}/logo`, {
+      method: "DELETE",
+      headers: await authHeader(),
+    }),
+  );
+}
+
+/* -------------------------------------------------------- per-dish photos */
+
+export async function uploadDishPhoto(
+  restaurantId: string,
+  itemId: string,
+  file: File,
+): Promise<DishPhoto> {
+  const form = new FormData();
+  form.append("file", file);
+  return unwrap(
+    await fetch(`${API}/api/restaurants/${restaurantId}/items/${itemId}/photo`, {
+      method: "POST",
+      headers: await authHeader(),
+      body: form,
+    }),
+  );
+}
+
+/** Ask for a different stock photo when the automatic match is wrong. */
+export async function researchDishPhoto(
+  restaurantId: string,
+  itemId: string,
+): Promise<DishPhoto> {
+  return unwrap(
+    await fetch(
+      `${API}/api/restaurants/${restaurantId}/items/${itemId}/photo/search`,
+      { method: "POST", headers: await authHeader() },
+    ),
+  );
+}
+
+export async function deleteDishPhoto(
+  restaurantId: string,
+  itemId: string,
+): Promise<void> {
+  await unwrap<void>(
+    await fetch(`${API}/api/restaurants/${restaurantId}/items/${itemId}/photo`, {
       method: "DELETE",
       headers: await authHeader(),
     }),

@@ -88,3 +88,10 @@ export function formatPrice(price: number | null, currency: string): string {
 export function countItems(menu: Menu): number {
   return menu.sections.reduce((total, s) => total + s.items.length, 0);
 }
+
+/** One dish's photo, keyed "<section>-<item>" in the owner API. */
+export type DishPhoto = {
+  item_id: string;
+  url: string | null;
+  source: string | null;
+};

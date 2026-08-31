@@ -523,3 +523,133 @@
   gap: 1rem;
   margin-block-end: 1.2rem;
 }
+
+.sectionblock__foot {
+  padding: 0.5rem 0.6rem 0.6rem;
+  border-block-start: 1px solid var(--line);
+}
+
+.warnbox {
+  margin-block-start: 0.5rem;
+  font-size: var(--t-xs);
+  color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--warn) 30%, transparent);
+  border-radius: var(--r-sm);
+  padding: 0.45rem 0.6rem;
+}
+
+/* --- per-dish photo control ----------------------------------------------- */
+
+@media (min-width: 40rem) {
+  .row--photo {
+    grid-template-columns: 3rem 1.2fr 1.4fr 5.5rem 5.5rem 2rem;
+  }
+}
+
+.photocell {
+  position: relative;
+  inline-size: 3rem;
+  block-size: 3rem;
+  flex: none;
+}
+
+.photocell__btn {
+  inline-size: 100%;
+  block-size: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface-sunk);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.photocell__btn:hover {
+  border-color: var(--accent);
+}
+
+.photocell__btn img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.photocell__hint {
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+}
+
+.photocell--new {
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--line);
+  border-radius: var(--r-sm);
+  opacity: 0.55;
+}
+
+.photocell__busy {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--surface) 65%, transparent);
+  border-radius: inherit;
+}
+
+/* A dot marks a photo the owner chose, so a re-publish visibly won't touch it. */
+.photocell__own {
+  position: absolute;
+  inset-block-start: -3px;
+  inset-inline-end: -3px;
+  color: var(--accent);
+  font-size: 1.1rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.photomenu {
+  position: absolute;
+  inset-block-start: calc(100% + 4px);
+  inset-inline-start: 0;
+  z-index: 30;
+  min-inline-size: 13rem;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.photomenu__item {
+  font: inherit;
+  font-size: var(--t-sm);
+  text-align: start;
+  padding: 0.5rem 0.7rem;
+  border: none;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.photomenu__item:hover:not(:disabled) {
+  background: var(--surface-sunk);
+}
+
+.photomenu__item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.photomenu__item--danger {
+  color: var(--danger);
+}
+
+.photomenu__error {
+  font-size: var(--t-xs);
+  color: var(--danger);
+  padding: 0.4rem 0.7rem 0.55rem;
+}

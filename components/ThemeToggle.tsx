@@ -18,7 +18,7 @@ export default function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>("system");
 
   useEffect(() => {
-    const stored = localStorage.getItem("menusnap-theme") as Theme | null;
+    const stored = localStorage.getItem("restofood-theme") as Theme | null;
     if (stored === "light" || stored === "dark") setTheme(stored);
   }, []);
 
@@ -27,10 +27,10 @@ export default function ThemeToggle() {
     const root = document.documentElement;
     if (next === "system") {
       root.removeAttribute("data-theme");
-      localStorage.removeItem("menusnap-theme");
+      localStorage.removeItem("restofood-theme");
     } else {
       root.setAttribute("data-theme", next);
-      localStorage.setItem("menusnap-theme", next);
+      localStorage.setItem("restofood-theme", next);
     }
   }
 

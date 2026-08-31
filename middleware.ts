@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 /**
  * Subdomain routing.
  *
- * Each restaurant answers on its own address — bluetokai.menusnap.in — which
+ * Each restaurant answers on its own address — bluetokai.restofood.in — which
  * reads like the cafe's own site rather than a row in ours. Internally those
  * requests are still served by /r/[slug]; this rewrite is what joins the two.
  *
@@ -36,7 +36,7 @@ function subdomainOf(host: string): string | null {
   if (!hostname.endsWith(`.${root}`)) return null;
 
   const label = hostname.slice(0, -(root.length + 1));
-  // Only a single label: "a.b.menusnap.in" is not a restaurant.
+  // Only a single label: "a.b.restofood.in" is not a restaurant.
   return label && !label.includes(".") ? label : null;
 }
 
@@ -47,8 +47,13 @@ export function middleware(request: NextRequest) {
   if (!slug || RESERVED.has(slug)) return NextResponse.next();
 
   const url = request.nextUrl.clone();
-  // Already the menu route (or an internal asset) — leave it alone.
+  // Already the menu route — leave it alone.
   if (url.pathname.startsWith("/r/")) return NextResponse.next();
+
+  // The owner console stays reachable from any host. Without this, an owner
+  // who types their own restaurant's address and then goes to /dashboard gets
+  // rewritten into /r/<slug>/dashboard, which is a 404.
+  if (url.pathname.startsWith("/dashboard")) return NextResponse.next();
 
   url.pathname = `/r/${slug}${url.pathname === "/" ? "" : url.pathname}`;
   return NextResponse.rewrite(url);

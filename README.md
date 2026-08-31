@@ -1,6 +1,6 @@
-# resto-ui — MenuSnap frontend
+# resto-ui — RestoFood frontend
 
-Next.js frontend for MenuSnap. Two surfaces, deliberately given different
+Next.js frontend for RestoFood. Two surfaces, deliberately given different
 treatments because they do different jobs:
 
 | Route | Who it's for | Job |
