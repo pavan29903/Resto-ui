@@ -38,11 +38,20 @@ export async function getConfig(): Promise<ApiConfig> {
   return unwrap(await fetch(`${API}/api/config`, { cache: "no-store" }));
 }
 
-/** The menu a diner sees. No auth — this is the point of the QR code. */
+/** The menu a diner sees. No auth — this is the point of the QR code.
+ *
+ *  Cached at the edge for a minute rather than fetched per request. A menu
+ *  changes a few times a month, but it's read every time someone sits down,
+ *  so almost every scan can be served without touching the API at all. That
+ *  makes the menu load fast, and it means a sleeping backend (Render's free
+ *  tier spins down when idle) isn't in the diner's path.
+ *
+ *  The cost is that an owner's edit can take up to a minute to appear.
+ */
 export async function getPublicMenu(slug: string): Promise<PublicMenu | null> {
   try {
     const res = await fetch(`${API}/api/public/menus/${slug}`, {
-      cache: "no-store",
+      next: { revalidate: 60, tags: [`menu:${slug}`] },
     });
     if (!res.ok) return null;
     return (await res.json()) as PublicMenu;

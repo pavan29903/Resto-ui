@@ -4,44 +4,74 @@ import ThemeToggle from "@/components/ThemeToggle";
 import "./home.css";
 
 export const metadata: Metadata = {
-  title: "RestoFood — your paper menu, on your customers' phones",
+  title: "RestoFood — your menu card, on every table's phone",
   description:
-    "Photograph your menu card and get a menu your customers open by scanning a QR code on the table. No typing, no website to build.",
+    "Photograph the menu card you already have. RestoFood turns it into a menu your customers open by scanning a code on the table, with a photo of every dish.",
 };
 
-/** The hero: a paper menu card turning into a phone.
- *
- *  It's the whole product in one look, and it's the thing the owner is
- *  literally holding while they read this page. Built in CSS rather than as
- *  an image so it stays crisp and themes with the rest of the site. */
+/** What the owner gets, written as a menu: a claim on the left, its concrete
+ *  answer on the right, joined by leader dots. The answers are specific on
+ *  purpose — "found for you" and a real-looking address say more than an
+ *  adjective would. */
+const GETS: [string, string][] = [
+  ["A photo for every dish", "found for you"],
+  ["Your own web address", "spicegarden.restofood.in"],
+  ["A code for the tables", "ready to print"],
+  ["Changing a price", "ten seconds"],
+  ["Reading it on a phone", "light or dark"],
+];
+
+const STEPS: [string, string, string][] = [
+  [
+    "1",
+    "Photograph the card",
+    "Any phone photo will do. Several pages is fine — we read them as one menu.",
+  ],
+  [
+    "2",
+    "Check what we read",
+    "Every dish and price appears in a list you can correct. Nothing goes live until you say so.",
+  ],
+  [
+    "3",
+    "Print the code",
+    "Put it on the tables. Your customers scan it and see the menu, photographs and all.",
+  ],
+];
+
+/** The pitch, demonstrating itself: on the left the paper card, listing what
+ *  you get; on the right that same card as a phone menu. */
 function Transformation() {
   return (
-    <div className="transform" aria-hidden="true">
-      <div className="paper">
-        <p className="paper__title">MENU</p>
-        <div className="paper__line paper__line--head" />
-        <div className="paper__line" style={{ inlineSize: "88%" }} />
-        <div className="paper__line" style={{ inlineSize: "72%" }} />
-        <div className="paper__line" style={{ inlineSize: "80%" }} />
-        <div className="paper__line paper__line--head" />
-        <div className="paper__line" style={{ inlineSize: "84%" }} />
-        <div className="paper__line" style={{ inlineSize: "65%" }} />
-        <div className="paper__line" style={{ inlineSize: "78%" }} />
-        <div className="paper__line" style={{ inlineSize: "58%" }} />
+    <div className="tf">
+      <article className="card rise rise--2">
+        <p className="card__name">RestoFood</p>
+        <p className="card__est">what you get</p>
+        <p className="card__sec">Included</p>
+        {GETS.map(([k, v]) => (
+          <p className="lead" key={k}>
+            <span className="lead__k">{k}</span>
+            <span className="lead__d" aria-hidden="true" />
+            <span className="lead__v">{v}</span>
+          </p>
+        ))}
+      </article>
+
+      <div className="tf__arrow rise rise--3" aria-hidden="true">
+        →
       </div>
 
-      <div className="transform__arrow">→</div>
-
-      <div className="phone">
-        <div className="phone__bar" />
-        <p className="phone__name">Spice Garden</p>
-        <div className="phone__grid">
-          {["", "--b", "--c", "--d"].map((v) => (
-            <div className="phone__card" key={v}>
-              <div className={`phone__shot phone__shot${v}`} />
-              <div className="phone__meta">
-                <div className="phone__l" style={{ inlineSize: "82%" }} />
-                <div className="phone__l phone__l--price" />
+      <div className="ph rise rise--3" aria-hidden="true">
+        <div className="ph__notch" />
+        <p className="ph__name">Spice Garden</p>
+        <p className="ph__meta">24 dishes · prices in INR</p>
+        <div className="ph__grid">
+          {["a", "b", "c", "d"].map((v) => (
+            <div className="ph__card" key={v}>
+              <div className={`ph__shot ph__shot--${v}`} />
+              <div className="ph__body">
+                <div className="ph__l" style={{ inlineSize: "84%" }} />
+                <div className="ph__l ph__l--p" />
               </div>
             </div>
           ))}
@@ -51,77 +81,49 @@ function Transformation() {
   );
 }
 
-const STEPS = [
-  {
-    n: "01",
-    h: "Photograph your card",
-    p: "Any phone photo works. Several pages is fine — we read them as one menu.",
-  },
-  {
-    n: "02",
-    h: "Check what we read",
-    p: "Every dish and price appears in a list you can correct. Nothing goes live until you say so.",
-  },
-  {
-    n: "03",
-    h: "Print the QR",
-    p: "Put it on the tables. Customers scan and see your menu, photos and all.",
-  },
-];
-
-const FEATURES = [
-  {
-    h: "Photos for every dish",
-    p: "We find a real photograph for each item. Swap in your own whenever you like.",
-  },
-  {
-    h: "Your own web address",
-    p: "Your menu lives at your restaurant's name, not a number in someone's system.",
-  },
-  {
-    h: "Change it in seconds",
-    p: "Prices change. Open the menu, edit the number, save. No one to call.",
-  },
-  {
-    h: "Built for phones",
-    p: "Your customers read it one-handed at the table, in daylight or a dim room.",
-  },
-];
-
 export default function Home() {
   return (
     <div className="home">
-      <nav className="homenav">
-        <div className="homenav__inner">
-          <Link className="homenav__mark" href="/">RestoFood</Link>
+      <nav className="hnav">
+        <div className="hnav__in">
+          <Link className="hnav__mark" href="/">RestoFood</Link>
           <ThemeToggle />
-          <Link className="btn btn--primary btn--sm" href="/dashboard" style={{ textDecoration: "none" }}>
+          <Link
+            className="btn btn--primary btn--sm"
+            href="/dashboard"
+            style={{ textDecoration: "none" }}
+          >
             Get started
           </Link>
         </div>
       </nav>
 
       <header className="hero">
-        <div>
-          <p className="eyebrow">For cafes still handing out paper</p>
-          <h1 className="hero__title">
-            Your menu card, on your customers&apos; <em>phones</em>.
+        <div className="hero__head rise">
+          <p className="eyebrow">For restaurants still handing out paper</p>
+          <h1 className="hero__h1">
+            You don&apos;t need a website. You need your menu on{" "}
+            <span>their phone</span>.
           </h1>
-          <p className="hero__lede">
-            Take a photo of the menu you already have. We turn it into a page
-            your customers open by scanning a code on the table — with a
-            picture of every dish.
+          <p className="hero__sub">
+            Photograph the card you already have. We turn it into a menu your
+            customers open by scanning a code on the table — with a photograph
+            of every dish.
           </p>
           <div className="hero__cta">
-            <Link className="btn btn--primary" href="/dashboard" style={{ textDecoration: "none" }}>
+            <Link
+              className="btn btn--primary"
+              href="/dashboard"
+              style={{ textDecoration: "none" }}
+            >
               Put my menu online
             </Link>
             <Link className="linkbtn" href="/r/demo">
-              See an example menu
+              Look at an example
             </Link>
           </div>
-          <p className="hero__note">
-            Takes about five minutes. You need nothing but your menu card.
+          <p className="hero__fine">
+            About five minutes, and you need nothing but your menu card.
           </p>
         </div>
 
@@ -129,60 +131,84 @@ export default function Home() {
       </header>
 
       <section className="band">
-        <div className="band__inner">
-          <h2 className="band__title">Three steps, one evening</h2>
-          <p className="band__lede">
-            You are not building a website. You are photographing the card
-            that&apos;s already on your counter.
-          </p>
+        <div className="band__in">
+          <div className="rule">
+            <span className="rule__t">How it works</span>
+          </div>
 
-          <ol className="steps">
-            {STEPS.map((s) => (
-              <li key={s.n}>
-                <span className="step__n">{s.n}</span>
-                <h3 className="step__h">{s.h}</h3>
-                <p className="step__p">{s.p}</p>
+          <ol className="courses">
+            {STEPS.map(([n, h, p]) => (
+              <li className="course" key={n}>
+                <span className="course__n">{n}</span>
+                <div>
+                  <h2 className="course__h">{h}</h2>
+                  <p className="course__p">{p}</p>
+                </div>
               </li>
             ))}
           </ol>
         </div>
       </section>
 
-      <section className="band" style={{ background: "var(--ground)" }}>
-        <div className="band__inner">
-          <h2 className="band__title">What your customers get</h2>
-          <p className="band__lede">
-            The things the big chains paid a developer for, without the
-            developer.
-          </p>
+      <section className="band band--plain">
+        <div className="band__in">
+          <div className="rule">
+            <span className="rule__t">Worth knowing</span>
+          </div>
 
-          <div className="feats">
-            {FEATURES.map((f) => (
-              <article className="feat" key={f.h}>
-                <h3 className="feat__h">{f.h}</h3>
-                <p className="feat__p">{f.p}</p>
-              </article>
-            ))}
+          <div className="courses">
+            <div className="course">
+              <span className="course__n">·</span>
+              <div>
+                <h2 className="course__h">Nothing goes live by accident</h2>
+                <p className="course__p">
+                  We read the card, then hand you the list. You fix anything
+                  that&apos;s wrong before a single customer sees it.
+                </p>
+              </div>
+            </div>
+            <div className="course">
+              <span className="course__n">·</span>
+              <div>
+                <h2 className="course__h">The photographs are yours to change</h2>
+                <p className="course__p">
+                  We find one for each dish. If a dish deserves your own
+                  photograph, put it in — we&apos;ll never overwrite it.
+                </p>
+              </div>
+            </div>
+            <div className="course">
+              <span className="course__n">·</span>
+              <div>
+                <h2 className="course__h">Prices change; so does the menu</h2>
+                <p className="course__p">
+                  Open it, type the new number, save. The code on the table
+                  keeps working — there is nothing to reprint.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       <section className="close">
-        <h2 className="close__title">Your menu could be live tonight</h2>
+        <h2 className="close__h">Your menu could be live tonight</h2>
         <p className="close__p">
-          Photograph the card, check the prices, print the code. That&apos;s the
+          Photograph the card, check the prices, print the code. That is the
           whole job.
         </p>
-        <p style={{ marginBlockStart: "1.75rem" }}>
-          <Link className="btn btn--primary" href="/dashboard" style={{ textDecoration: "none" }}>
+        <p style={{ marginBlockStart: "1.7rem" }}>
+          <Link
+            className="btn btn--primary"
+            href="/dashboard"
+            style={{ textDecoration: "none" }}
+          >
             Start with my menu
           </Link>
         </p>
       </section>
 
-      <footer className="homefoot">
-        RestoFood — menus for small restaurants.
-      </footer>
+      <footer className="hfoot">RestoFood — menus for small restaurants.</footer>
     </div>
   );
 }

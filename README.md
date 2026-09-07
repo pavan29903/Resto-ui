@@ -1,89 +1,133 @@
-# resto-ui — RestoFood frontend
+# RestoFood — web
 
-Next.js frontend for RestoFood. Two surfaces, deliberately given different
-treatments because they do different jobs:
+The customer-facing half of RestoFood. Next.js, deployed on Vercel.
 
-| Route | Who it's for | Job |
+It serves three different people from one codebase:
+
+| Route | Who | What they're doing |
 |---|---|---|
-| `/` | the cafe owner | Upload the menu card, **verify the AI read it right**, publish |
-| `/r/[slug]` | the diner at the table | Make the food look worth ordering |
+| `/` | someone deciding | Reading the pitch |
+| `/dashboard` | the restaurant owner | Uploading a menu card, checking prices, publishing |
+| `/r/[slug]` | a diner at the table | Browsing the menu they just scanned |
 
-It talks to the FastAPI backend in `../resto-api`.
+Once a domain is attached, each restaurant also answers on its own subdomain —
+`spicegarden.restofood.in` — which is the same `/r/[slug]` page reached through
+a rewrite in [`middleware.ts`](middleware.ts).
 
-## Run it
+The API lives in a separate repository: **[Resto-api](https://github.com/pavan29903/Resto-api)**.
 
-Two terminals — the backend must be up first, or the console shows
-"backend not reachable".
+---
+
+## Running it locally
+
+You need the API running first — the console can't sign in without it.
 
 ```bash
-# terminal 1 — backend
-cd resto-api
-uv run uvicorn app.main:app --reload --port 8100
+# 1. install
+npm install
 
-# terminal 2 — frontend
-cd resto-ui
-npm install          # first time only
-npm run dev          # → http://localhost:3000
+# 2. configure
+cp .env.local.example .env.local     # PowerShell: Copy-Item .env.local.example .env.local
+
+# 3. run
+npm run dev                          # → http://localhost:3000
 ```
 
-`.env.local` holds the backend URL (copy from `.env.local.example`):
+`.env.local` needs three values:
 
-```
-NEXT_PUBLIC_API_URL=http://localhost:8100
-```
-
-Dish images and QR codes are proxied through `/menus/*` (see `next.config.mjs`)
-so every asset is same-origin.
-
-## Design system — "Steel & Indigo"
-
-Grounded in the subject rather than picked from a palette generator: the cool,
-blue-biased neutrals come from the brushed steel of a thali and tumbler; the
-indigo accent from block-print dye. Cool neutrals are a deliberate choice —
-they make warm food photography advance off the page where a cream ground
-would flatten it.
-
-- **Colour** — every value is a CSS custom property defined once in
-  `app/globals.css`. Components read `var(--token)` and never a literal, so
-  light and dark each resolve as a complete set.
-- **Type** — `Rozha One` (display, used once per page) + `Mukta` (body,
-  300–700). Both carry **Devanagari as well as Latin**, because real Indian
-  menus are bilingual and a face that renders tofu boxes for half the menu is
-  not a candidate. Self-hosted at build time via `next/font` — no runtime CDN.
-- **Signature — the leader rail.** Printed menus join a dish to its price with
-  leader dots. Here the join is a hairline and prices sit in a fixed right rail
-  with tabular figures, so a section's prices stack into one scannable column.
-- **Themes** — light, system-dark, and an explicit `data-theme` override are
-  all handled. No colour is declared only inside a media query.
-
-Deliberately **no Tailwind**: utility defaults are what produced the templated
-look this replaced.
-
-## Layout
-
-```
-app/
-  globals.css          design tokens, both themes, primitives
-  layout.tsx           fonts + html shell
-  page.tsx             owner console (client component)
-  console.css
-  r/[slug]/
-    page.tsx           diner menu (server component)
-    menu.css
-lib/
-  api.ts               typed calls to the FastAPI backend
-  types.ts             mirrors app/schemas/menu.py
+```ini
+NEXT_PUBLIC_API_URL=http://localhost:8222
+NEXT_PUBLIC_SUPABASE_URL=https://<project>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 ```
 
-## Checks
+Everything here is public by design — the anon key is meant to reach the
+browser. The service key never appears in this repository.
+
+**Testing subdomains locally** needs no DNS setup: `spice-garden.localhost:3000`
+resolves on its own, and the middleware treats it exactly as it will treat a
+real subdomain.
 
 ```bash
 npm run typecheck    # tsc --noEmit
 npm run build        # production build
 ```
 
+---
+
+## How it's put together
+
+```
+app/
+  page.tsx            the landing page
+  home.css
+  dashboard/          the owner's console — upload, review, publish, edit
+  r/[slug]/           the diner's menu
+  globals.css         design tokens, both themes, shared primitives
+  layout.tsx          fonts, and the script that prevents a theme flash
+components/
+  MenuEditor          the dish table, shared by first review and later edits
+  EditRestaurant      name, address, WhatsApp, logo, and the menu
+  DishPhotoCell       replace one dish's photograph
+  LogoUpload · SignIn · ThemeToggle
+lib/
+  api.ts              every call to the API, typed
+  types.ts            mirrors the API's schema
+  supabase.ts         browser auth client
+middleware.ts         subdomain → restaurant
+```
+
+Auth is Supabase. The browser holds the session; every request to the API
+carries its token, and the API verifies it against Supabase's public keys.
+
+---
+
+## Design
+
+The visual system is documented here because it's easy to erode without a
+written reason for each decision.
+
+**Colour — steel and indigo.** Cool, blue-biased neutrals drawn from the
+brushed steel of a thali and tumbler, with indigo from block-print dye. The
+neutrals are cool on purpose: warm food photography advances off a cool ground
+and flattens against a cream one. Every value is a custom property defined once
+in `globals.css`; components read `var(--token)` and never a literal, so light
+and dark each resolve as a complete set.
+
+**Type — Rozha One and Mukta.** One characterful display face, used once per
+page, and one workhorse. Both were chosen under a constraint that rules out
+most handsome faces: **they carry Devanagari as well as Latin.** Real Indian
+menus are bilingual, and a face that renders tofu boxes for half the menu is
+not a candidate. Self-hosted at build time — no runtime font CDN.
+
+**The leader rail.** Printed menus join a dish to its price with a row of
+dots. The landing page uses that device to join a claim to its answer. It is
+the one place the design spends its boldness.
+
+**Themes.** Light, system-dark, and an explicit choice are all handled, and a
+script in `layout.tsx` applies the stored preference before first paint —
+without it, a diner who chose dark gets a white flash on every load, worst
+exactly where it is most visible.
+
+**No Tailwind**, deliberately: utility defaults are what produced the
+templated first draft this replaced.
+
+---
+
+## Deploying
+
+Vercel builds this from GitHub on every push to `main`. Set the same three
+environment variables in the project settings, pointing at the deployed API
+rather than localhost.
+
+Full instructions, including the domain and wildcard certificate:
+[`DEPLOY.md`](https://github.com/pavan29903/Resto-api/blob/main/DEPLOY.md) in
+the API repository.
+
+---
+
 ## Not built yet
 
-Ordering and the kitchen screen. Both need backend endpoints that don't exist
-yet (no `orders` table, no WebSocket) — the diner menu currently ends at
-"Ready to order? Call your server."
+Ordering. A diner can read the menu and see every dish, but cannot place an
+order from it — there is no cart here and no orders table in the API. The menu
+currently ends at *"Ready to order? Call your server."*
