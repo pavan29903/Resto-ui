@@ -32,8 +32,10 @@ export const viewport = {
   // Diners squint at small type in dim rooms; let them zoom.
   maximumScale: 5,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f3f5f8" },
-    { media: "(prefers-color-scheme: dark)", color: "#0e1116" },
+    // Must track --ground in globals.css, or the phone's browser chrome
+    // frames the page in the wrong colour.
+    { media: "(prefers-color-scheme: light)", color: "#fbf7ef" },
+    { media: "(prefers-color-scheme: dark)", color: "#14100d" },
   ],
 };
 

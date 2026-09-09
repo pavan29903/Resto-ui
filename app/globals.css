@@ -1,46 +1,53 @@
 /* ============================================================================
-   RestoFood design system — "Steel & Indigo"
+   RestoFood design system — "Paper & Saffron"
 
-   Grounded in the subject: the brushed steel of a thali and tumbler gives the
-   cool, blue-biased neutrals; indigo (block-print dye) gives the accent. Cool
-   neutrals are deliberate — they make warm food photography advance off the
-   page, where a cream ground would flatten it.
+   Grounded in the subject: the warm off-white of a printed menu card gives the
+   neutrals, and saffron — the colour of the food and of the country — gives
+   the accent. Warm throughout, because this product is about appetite; cool
+   greys make food photography look refrigerated.
+
+   Dark is a warm dark, near-black with a brown bias rather than the usual
+   blue-black, so a diner switching themes at the table sees the same
+   restaurant rather than a different app.
 
    Colour is defined ONCE per token, at :root and in the two theme overrides.
    Components only ever read var(--token), never a literal, so both themes
-   resolve as a complete set.
+   resolve as a complete set — which is why retheming the entire product is
+   an edit to these three blocks and nothing else.
    ========================================================================= */
 
 :root {
-  /* Ground / surfaces — steel greys, biased blue rather than neutral */
-  --ground: #f3f5f8;
+  /* Ground / surfaces — paper stock, warm rather than neutral */
+  --ground: #fbf7ef;
   --surface: #ffffff;
-  --surface-sunk: #eaeef3;
-  --line: #dbe1e9;
-  --line-strong: #c3ccd8;
+  --surface-sunk: #f4ede0;
+  --line: #e8dfcf;
+  --line-strong: #d5c8b0;
 
   /* Ink */
-  --ink: #13161d;
-  --ink-soft: #4a5361;
-  --ink-muted: #6f7987;
+  --ink: #1b1714;
+  --ink-soft: #5e554a;
+  --ink-muted: #918675;
 
-  /* Accent — indigo */
-  --accent: #2f3aa8;
-  --accent-hover: #262e88;
-  --accent-soft: #eceefb;
+  /* Accent — saffron. Held at #b8500b rather than a brighter burnt orange
+     because that is where it clears 4.5:1 on the paper ground, and the accent
+     carries body-sized link text, not just headings. */
+  --accent: #b8500b;
+  --accent-hover: #973f08;
+  --accent-soft: #fdefe0;
   --accent-ink: #ffffff;
 
   /* Semantic — deliberately separate from the accent.
      Veg / non-veg follow the FSSAI marks every Indian diner already reads. */
-  --veg: #1b8a3f;
-  --nonveg: #8c3b14;
+  --veg: #2f7d4f;
+  --nonveg: #a03c22;
   --warn: #9a5b06;
   --danger: #b3261e;
-  --danger-soft: #fdeceb;
+  --danger-soft: #fdecea;
 
-  /* Elevation — soft and low; steel doesn't cast dramatic shadows */
-  --shadow-sm: 0 1px 2px rgb(19 22 29 / 0.05);
-  --shadow-md: 0 4px 16px -4px rgb(19 22 29 / 0.12);
+  /* Elevation — soft and low; paper doesn't cast dramatic shadows */
+  --shadow-sm: 0 1px 2px rgb(27 23 20 / 0.05);
+  --shadow-md: 0 4px 16px -4px rgb(27 23 20 / 0.14);
 
   /* Geometry — restrained. Not rounded-2xl on everything. */
   --r-sm: 4px;
@@ -63,26 +70,27 @@
 /* System-dark (no explicit choice stamped) — guarded so an explicit light wins */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --ground: #0e1116;
-    --surface: #161a22;
-    --surface-sunk: #1d222c;
-    --line: #262d39;
-    --line-strong: #38414f;
+    --ground: #14100d;
+    --surface: #1c1713;
+    --surface-sunk: #241d18;
+    --line: #2c241e;
+    --line-strong: #3f342b;
 
-    --ink: #e9edf3;
-    --ink-soft: #aab3c0;
-    --ink-muted: #808b9a;
+    --ink: #f4ede3;
+    --ink-soft: #bcae9e;
+    --ink-muted: #92857a;
 
-    --accent: #949cf7;
-    --accent-hover: #adb3f9;
-    --accent-soft: #1b2140;
-    --accent-ink: #10131c;
+    /* Saffron lightens on dark — #b8500b would disappear into the ground. */
+    --accent: #f0a35a;
+    --accent-hover: #ffb877;
+    --accent-soft: #2c1d10;
+    --accent-ink: #1a1006;
 
-    --veg: #4ec97a;
-    --nonveg: #d98155;
+    --veg: #5cc487;
+    --nonveg: #e08a5f;
     --warn: #e0a23c;
     --danger: #f2837c;
-    --danger-soft: #2a1615;
+    --danger-soft: #2a1512;
 
     --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
     --shadow-md: 0 4px 18px -4px rgb(0 0 0 / 0.55);
@@ -91,26 +99,27 @@
 
 /* Explicit dark choice — wins over a light OS */
 :root[data-theme="dark"] {
-  --ground: #0e1116;
-  --surface: #161a22;
-  --surface-sunk: #1d222c;
-  --line: #262d39;
-  --line-strong: #38414f;
+  --ground: #14100d;
+  --surface: #1c1713;
+  --surface-sunk: #241d18;
+  --line: #2c241e;
+  --line-strong: #3f342b;
 
-  --ink: #e9edf3;
-  --ink-soft: #aab3c0;
-  --ink-muted: #808b9a;
+  --ink: #f4ede3;
+  --ink-soft: #bcae9e;
+  --ink-muted: #92857a;
 
-  --accent: #949cf7;
-  --accent-hover: #adb3f9;
-  --accent-soft: #1b2140;
-  --accent-ink: #10131c;
+  /* Saffron lightens on dark — #b8500b would disappear into the ground. */
+  --accent: #f0a35a;
+  --accent-hover: #ffb877;
+  --accent-soft: #2c1d10;
+  --accent-ink: #1a1006;
 
-  --veg: #4ec97a;
-  --nonveg: #d98155;
+  --veg: #5cc487;
+  --nonveg: #e08a5f;
   --warn: #e0a23c;
   --danger: #f2837c;
-  --danger-soft: #2a1615;
+  --danger-soft: #2a1512;
 
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
   --shadow-md: 0 4px 18px -4px rgb(0 0 0 / 0.55);

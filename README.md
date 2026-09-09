@@ -30,8 +30,11 @@ npm install
 cp .env.local.example .env.local     # PowerShell: Copy-Item .env.local.example .env.local
 
 # 3. run
-npm run dev                          # → http://localhost:3000
+npm run dev                          # → http://localhost:5005
 ```
+
+Port 5005 rather than Next's default 3000, which tends to be occupied. The
+API allows both from a browser, so either works if you change it.
 
 `.env.local` needs three values:
 
@@ -87,12 +90,39 @@ carries its token, and the API verifies it against Supabase's public keys.
 The visual system is documented here because it's easy to erode without a
 written reason for each decision.
 
-**Colour — steel and indigo.** Cool, blue-biased neutrals drawn from the
-brushed steel of a thali and tumbler, with indigo from block-print dye. The
-neutrals are cool on purpose: warm food photography advances off a cool ground
-and flattens against a cream one. Every value is a custom property defined once
-in `globals.css`; components read `var(--token)` and never a literal, so light
-and dark each resolve as a complete set.
+**Colour — paper and saffron.** The warm off-white of a printed menu card
+gives the neutrals; saffron, the colour of the food and of the country, gives
+the accent. Warm throughout, because the product is about appetite and cool
+greys make food photography look refrigerated. Dark is a *warm* dark — a
+brown-biased near-black rather than the usual blue-black — so a diner
+switching themes at the table sees the same restaurant, not a different app.
+
+The accent sits at `#b8500b` rather than a brighter burnt orange because that
+is where it clears 4.5:1 against the paper ground, and the accent carries
+body-sized link text, not just headings. On dark it lightens to `#f0a35a`;
+the darker value would vanish into the ground.
+
+**One palette, three surfaces.** The landing page, the console and the
+diner's menu all read the same tokens. Every value is a custom property
+defined once in `globals.css` and repeated only in the two theme overrides;
+components read `var(--token)` and never a literal. That is what makes
+retheming the entire product an edit to three blocks — which is exactly how
+this palette replaced the previous one.
+
+Two deliberate exceptions, both documented where they appear. The paper card
+in the landing-page hero keeps literal colours, because it *depicts* printed
+paper and paper is white under a dark theme too; likewise the phone mock,
+which is a picture of a device rather than themed UI. And the QR code in the
+console has a hardcoded white quiet zone — on a dark surface it would not
+scan.
+
+**The jali.** Behind the hero is a lattice of interlocking circles — the
+pierced stone screen of Mughal architecture, whose purpose is to let warm
+light through a wall. It does the same job here: the page's glow is behind it
+and shines through. It is drawn as one inline SVG pattern, so it costs a few
+hundred bytes and no request. It replaced a set of blurred gradient blobs,
+which are the default decoration of every AI-era landing page and say nothing
+about an Indian restaurant.
 
 **Type — Rozha One and Mukta.** One characterful display face, used once per
 page, and one workhorse. Both were chosen under a constraint that rules out

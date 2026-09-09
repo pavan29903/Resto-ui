@@ -327,6 +327,9 @@
 .qrcard img {
   inline-size: 11rem;
   block-size: 11rem;
+  /* The one deliberate literal in the system: a QR code needs a white quiet
+     zone to scan. On a dark surface it would fail, so this must not follow
+     the theme. */
   background: #fff;
   padding: 0.6rem;
   border-radius: var(--r-md);
