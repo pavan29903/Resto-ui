@@ -38,6 +38,9 @@ export default function Console() {
 
   const [stage, setStage] = useState<Stage>("list");
   const [restaurants, setRestaurants] = useState<RestaurantSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [slow, setSlow] = useState(false);
 
   const [files, setFiles] = useState<File[]>([]);
   const [dragging, setDragging] = useState(false);
@@ -54,6 +57,7 @@ export default function Console() {
   const [published, setPublished] = useState<RestaurantSummary | null>(null);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
 
   const fileInput = useRef<HTMLInputElement>(null);
 
@@ -71,17 +75,41 @@ export default function Console() {
     getConfig().then(setConfig).catch(() => setConfig(null));
   }, []);
 
-  const refresh = useCallback(async () => {
+  /** `withSkeleton` only on the first fetch. Later refreshes — after a publish,
+   *  a delete, a logo change — already have content on screen, and replacing it
+   *  with placeholders would read as the page breaking. */
+  const load = useCallback(async (withSkeleton: boolean) => {
+    if (withSkeleton) setLoading(true);
+    setLoadError(null);
     try {
       setRestaurants(await listRestaurants());
-    } catch {
-      /* not signed in yet */
+    } catch (err) {
+      // Silence here was the bug: a failed request rendered the "no menus yet"
+      // empty state, telling an owner their menus were gone.
+      setLoadError(
+        err instanceof Error ? err.message : "We couldn't load your menus.",
+      );
+    } finally {
+      setLoading(false);
     }
   }, []);
 
+  const refresh = useCallback(() => load(false), [load]);
+
   useEffect(() => {
-    if (session) refresh();
-  }, [session, refresh]);
+    if (session) load(true);
+  }, [session, load]);
+
+  // The API sleeps after 15 idle minutes and takes up to a minute to wake.
+  // Saying so beats a spinner that looks stuck.
+  useEffect(() => {
+    if (!loading) {
+      setSlow(false);
+      return;
+    }
+    const timer = setTimeout(() => setSlow(true), 4000);
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   if (!ready) return <main className="shell centered"><p className="status">Loading…</p></main>;
   if (!session)
@@ -205,14 +233,26 @@ export default function Console() {
           >
             RestoFood
           </button>
-          <div className="topbar__models">
+          {/* Three things, three weights. The account is the owner's own
+              identity and gets a real control; what the servers are running is
+              reference detail, kept quiet and dropped on small screens; signing
+              out is rare and shouldn't compete with either. */}
+          <div className="topbar__right">
             {config && (
-              <>
-                <span className="pill">reads with {config.extraction_model}</span>
-                <span className="pill">photos from {config.image_provider}</span>
-              </>
+              <p className="topbar__meta" title="Providers this menu reader uses">
+                <span>{config.extraction_model}</span>
+                <span aria-hidden="true">·</span>
+                <span>{config.image_provider} photos</span>
+              </p>
             )}
-            <span className="pill">{session.user.email}</span>
+
+            <span className="account" title={session.user.email}>
+              <span className="account__mark" aria-hidden="true">
+                {(session.user.email ?? "?").charAt(0).toUpperCase()}
+              </span>
+              <span className="account__mail">{session.user.email}</span>
+            </span>
+
             <ThemeToggle />
             <button
               className="btn btn--quiet btn--sm"
@@ -230,10 +270,53 @@ export default function Console() {
           <section className="intro">
             <p className="eyebrow">Your menus</p>
             <h1 className="intro__title">
-              {restaurants.length ? "Welcome back." : "Let's get your menu online."}
+              {loading
+                ? "Your menus"
+                : restaurants.length
+                  ? "Welcome back."
+                  : "Let's get your menu online."}
             </h1>
 
-            {restaurants.length === 0 ? (
+            {loading ? (
+              <>
+                <p className="intro__lede">
+                  {slow
+                    ? "Still fetching — the server sleeps when nobody's using it, so the first load after a quiet spell can take up to a minute."
+                    : "One moment."}
+                </p>
+                <div className="cardgrid" aria-hidden="true">
+                  {[0, 1].map((i) => (
+                    <article className="rcard rcard--ghost" key={i}>
+                      <div className="rcard__top">
+                        <span className="ghost ghost--logo" />
+                        <div className="rcard__id">
+                          <span className="ghost ghost--name" />
+                          <span className="ghost ghost--url" />
+                        </div>
+                      </div>
+                      <div className="rcard__foot">
+                        <span className="ghost ghost--btn" />
+                        <span className="ghost ghost--btn" />
+                      </div>
+                    </article>
+                  ))}
+                </div>
+                <p className="sronly" role="status">
+                  Loading your menus
+                </p>
+              </>
+            ) : loadError ? (
+              <>
+                <p className="intro__lede">{loadError}</p>
+                <button
+                  className="btn btn--primary"
+                  style={{ marginBlockStart: "1.4rem" }}
+                  onClick={() => load(true)}
+                >
+                  Try again
+                </button>
+              </>
+            ) : restaurants.length === 0 ? (
               <>
                 <p className="intro__lede">
                   Photograph your menu card and we'll turn it into a page your
@@ -251,39 +334,64 @@ export default function Console() {
               <>
                 <div className="cardgrid">
                   {restaurants.map((r) => (
-                    <article className="minicard" key={r.id}>
-                      <div>
-                        <h3 className="minicard__name">{r.name}</h3>
-                        <p className="status">{r.menu_url.replace(/^https?:\/\//, "")}</p>
-                      </div>
-                      <LogoUpload
-                        restaurantId={r.id}
-                        initial={r.logo_url}
-                        onChange={refresh}
-                      />
-                      <div className="minicard__foot">
-                        <span className={`chip ${r.is_published ? "chip--live" : ""}`}>
+                    <article className="rcard" key={r.id}>
+                      <div className="rcard__top">
+                        <LogoUpload
+                          compact
+                          restaurantId={r.id}
+                          initial={r.logo_url}
+                          onChange={() => refresh()}
+                        />
+                        <div className="rcard__id">
+                          <h3 className="rcard__name">{r.name}</h3>
+                          {/* The address is the thing an owner needs to hand to
+                              someone else, so it is a copy control rather than
+                              text they have to select by hand. */}
+                          <button
+                            className="rcard__addr"
+                            onClick={() => {
+                              navigator.clipboard?.writeText(r.menu_url);
+                              setCopied(r.id);
+                              setTimeout(() => setCopied(null), 1600);
+                            }}
+                            title="Copy this address"
+                          >
+                            <span className="rcard__host">
+                              {r.menu_url.replace(/^https?:\/\//, "")}
+                            </span>
+                            <span className="rcard__copy">
+                              {copied === r.id ? "Copied" : "Copy"}
+                            </span>
+                          </button>
+                        </div>
+                        <span className={`live${r.is_published ? " live--on" : ""}`}>
+                          <i aria-hidden="true" />
                           {r.is_published ? "Live" : "Draft"}
                         </span>
+                      </div>
+
+                      <div className="rcard__foot">
                         <button
-                          className="linkbtn"
+                          className="btn btn--quiet btn--sm"
                           onClick={() => {
                             setEditingId(r.id);
                             setStage("edit");
                           }}
                         >
-                          Edit
+                          Edit menu
                         </button>
                         <a
-                          className="linkbtn"
+                          className="btn btn--quiet btn--sm"
                           href={`/r/${r.slug}`}
                           target="_blank"
                           rel="noreferrer"
                         >
-                          View
+                          View ↗
                         </a>
+                        {/* Deleting a restaurant's whole menu should not sit at
+                            the same weight as opening it. */}
                         <button
-                          className="linkbtn linkbtn--danger"
+                          className="rcard__del"
                           onClick={async () => {
                             if (!confirm(`Delete ${r.name} and its menu?`)) return;
                             await deleteRestaurant(r.id);

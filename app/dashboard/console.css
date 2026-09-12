@@ -25,12 +25,68 @@
   letter-spacing: -0.01em;
 }
 
-.topbar__models {
+.topbar__right {
   margin-inline-start: auto;
   display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+/* What the servers are running: reference detail, not a badge. Set in the
+   numeric/utility register and dropped entirely on small screens, where the
+   owner's own account is the only thing worth the width. */
+.topbar__meta {
+  display: none;
   gap: 0.4rem;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+@media (min-width: 62rem) {
+  .topbar__meta { display: flex; }
+}
+
+/* The account. A bordered control with the owner's initial, so it reads as
+   "you" rather than as one more status chip. */
+.account {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.25rem 0.7rem 0.25rem 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-sunk);
+  max-inline-size: 14rem;
+}
+
+.account__mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  inline-size: 1.55rem;
+  block-size: 1.55rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.account__mail {
+  font-size: var(--t-sm);
+  color: var(--ink-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Below the fold of a phone the address is noise; the initial still says who
+   is signed in. */
+@media (max-width: 40rem) {
+  .account { padding-inline-end: 0.3rem; }
+  .account__mail { display: none; }
 }
 
 .pill {
@@ -416,27 +472,230 @@
   }
 }
 
-.minicard {
+/* --- a saved restaurant ---------------------------------------------------
+   Identity on top (logo, name, address, whether it's live), actions below a
+   rule. The address is the thing an owner actually needs to hand to someone,
+   so it gets the copy affordance; Delete is pushed away from the others. */
+
+.rcard {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 1rem;
+  gap: 0.9rem;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
-  padding: 1.1rem;
+  padding: 1rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.minicard__name {
-  font-size: var(--t-md);
+.rcard:hover {
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-sm);
+}
+
+.rcard__top {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.rcard__id {
+  min-inline-size: 0; /* lets the address ellipsis instead of stretching the card */
+  flex: 1;
+}
+
+.rcard__name {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: var(--t-lg);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.rcard__addr {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  max-inline-size: 100%;
+  margin-block-start: 0.15rem;
+  padding: 0;
+  font: inherit;
+  font-size: var(--t-sm);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink-muted);
+  text-align: start;
+}
+
+.rcard__host {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rcard__copy {
+  flex: none;
+  font-size: var(--t-xs);
   font-weight: 600;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 0.15s ease;
 }
 
-.minicard__foot {
+/* Revealed on approach, but always present for keyboard users. */
+.rcard__addr:hover .rcard__copy,
+.rcard__addr:focus-visible .rcard__copy {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .rcard__copy { opacity: 1; }
+}
+
+/* A lit dot, not a grey badge: "live" is a state, and a state reads better as
+   a light than as a word in a box. */
+.live {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.live i {
+  inline-size: 0.45rem;
+  block-size: 0.45rem;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+
+.live--on { color: var(--veg); }
+
+.live--on i {
+  background: var(--veg);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--veg) 20%, transparent);
+}
+
+.rcard__foot {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
+  gap: 0.5rem;
+  padding-block-start: 0.85rem;
+  border-block-start: 1px solid var(--line);
+}
+
+.rcard__del {
+  margin-inline-start: auto;
+  font: inherit;
   font-size: var(--t-sm);
+  background: none;
+  border: none;
+  padding: 0.4em 0.2em;
+  cursor: pointer;
+  color: var(--ink-muted);
+  transition: color 0.15s ease;
+}
+
+.rcard__del:hover { color: var(--danger); }
+
+/* --- compact logo picker --------------------------------------------------- */
+
+.logopick {
+  position: relative;
+  flex: none;
+  inline-size: 3rem;
+  block-size: 3rem;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface-sunk);
+  overflow: hidden;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.logopick img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+
+.logopick__empty {
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+}
+
+.logopick__hint {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  padding-block: 1px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #fff;
+  background: rgb(27 23 20 / 0.72);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.logopick:hover .logopick__hint,
+.logopick:focus-visible .logopick__hint {
+  opacity: 1;
+}
+
+/* --- loading --------------------------------------------------------------
+   Placeholders shaped like the cards they replace, so the layout doesn't jump
+   when the real data lands. Before this, an empty `restaurants` array rendered
+   the "no menus yet" state while the request was still in flight — which told
+   owners their menus were gone. */
+
+.rcard--ghost { pointer-events: none; }
+
+.ghost {
+  display: block;
+  border-radius: var(--r-sm);
+  background: linear-gradient(
+    90deg,
+    var(--surface-sunk) 0%,
+    color-mix(in srgb, var(--line) 55%, var(--surface-sunk)) 50%,
+    var(--surface-sunk) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.ghost--logo {
+  inline-size: 3rem;
+  block-size: 3rem;
+  border-radius: var(--r-md);
+  flex: none;
+}
+
+.ghost--name { inline-size: 55%; block-size: 1.1rem; }
+.ghost--url { inline-size: 80%; block-size: 0.8rem; margin-block-start: 0.45rem; }
+.ghost--btn { inline-size: 5.5rem; block-size: 2rem; border-radius: var(--r-md); }
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ghost { animation: none; }
+}
+
+.sronly {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .chip {

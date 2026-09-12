@@ -9,10 +9,16 @@ export default function LogoUpload({
   restaurantId,
   initial,
   onChange,
+  compact = false,
 }: {
   restaurantId: string;
   initial: string | null;
   onChange?: (url: string | null) => void;
+  /** Thumbnail only, for a list of restaurants. The full version explains what
+   *  a logo is and where it appears — useful once, but repeated down a list it
+   *  becomes the loudest thing on every card. Removing a logo stays in Edit,
+   *  where the rest of the restaurant's settings live. */
+  compact?: boolean;
 }) {
   const [logo, setLogo] = useState<string | null>(initial);
   const [busy, setBusy] = useState(false);
@@ -48,6 +54,42 @@ export default function LogoUpload({
     }
   }
 
+  const picker = (
+    <input
+      ref={input}
+      type="file"
+      accept="image/png,image/jpeg,image/webp,image/gif,image/bmp"
+      hidden
+      onChange={(e) => {
+        pick(e.target.files?.[0]);
+        e.target.value = "";
+      }}
+    />
+  );
+
+  if (compact) {
+    return (
+      <>
+        <button
+          className="logopick"
+          disabled={busy}
+          onClick={() => input.current?.click()}
+          title={logo ? "Replace this logo" : "Add a logo"}
+        >
+          {logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logo} alt="" />
+          ) : (
+            <span className="logopick__empty">Logo</span>
+          )}
+          <span className="logopick__hint">{busy ? "…" : logo ? "Change" : "Add"}</span>
+        </button>
+        {picker}
+        {error && <p className="status status--error">{error}</p>}
+      </>
+    );
+  }
+
   return (
     <div className="logorow">
       <div className="logorow__preview">
@@ -80,16 +122,7 @@ export default function LogoUpload({
               Remove
             </button>
           )}
-          <input
-            ref={input}
-            type="file"
-            accept="image/png,image/jpeg,image/webp,image/gif,image/bmp"
-            hidden
-            onChange={(e) => {
-              pick(e.target.files?.[0]);
-              e.target.value = "";
-            }}
-          />
+          {picker}
         </div>
 
         {error && (
