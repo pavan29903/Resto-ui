@@ -50,10 +50,12 @@ export function middleware(request: NextRequest) {
   // Already the menu route — leave it alone.
   if (url.pathname.startsWith("/r/")) return NextResponse.next();
 
-  // The owner console stays reachable from any host. Without this, an owner
-  // who types their own restaurant's address and then goes to /dashboard gets
-  // rewritten into /r/<slug>/dashboard, which is a 404.
-  if (url.pathname.startsWith("/dashboard")) return NextResponse.next();
+  // The owner console and the back office stay reachable from any host.
+  // Without this, an owner who types their own restaurant's address and then
+  // goes to /dashboard gets rewritten into /r/<slug>/dashboard, which is a 404.
+  if (url.pathname.startsWith("/dashboard") || url.pathname.startsWith("/admin")) {
+    return NextResponse.next();
+  }
 
   url.pathname = `/r/${slug}${url.pathname === "/" ? "" : url.pathname}`;
   return NextResponse.rewrite(url);

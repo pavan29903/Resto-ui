@@ -39,6 +39,8 @@ export type PublicMenu = {
   whatsapp: string | null;
   menu: Menu;
   images: Record<string, string>;
+  /** Optional so an older API that doesn't send it reads as "not dimmed". */
+  dimmed?: boolean;
 };
 
 export type ExtractResponse = {
@@ -55,6 +57,22 @@ export type PublishJob = {
   error: string | null;
   menu_url: string | null;
   slug?: string;
+};
+
+/** Set by the API when a restaurant's plan has been over for weeks. Just a
+ *  boolean — nothing about the restaurant's billing is public. */
+export type MenuAvailability = { dimmed?: boolean };
+
+/** Mirrors Subscription.as_dict() in resto-api/app/modules/billing/service.py. */
+export type Subscription = {
+  status: "trialing" | "active" | "grace" | "expired";
+  expires_on: string | null;
+  /** Negative once past the expiry date. */
+  days_left: number;
+  can_edit: boolean;
+  is_paid: boolean;
+  /** True when the console should say something about it. */
+  warn: boolean;
 };
 
 export type ApiConfig = {

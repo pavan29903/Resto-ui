@@ -7,6 +7,7 @@ import LogoUpload from "@/components/LogoUpload";
 import MenuEditor from "@/components/MenuEditor";
 import SignIn from "@/components/SignIn";
 import ThemeToggle from "@/components/ThemeToggle";
+import TrialNotice from "@/components/TrialNotice";
 import { supabase } from "@/lib/supabase";
 import {
   API,
@@ -16,6 +17,7 @@ import {
   fetchQrObjectUrl,
   getConfig,
   getPublishJob,
+  getSubscription,
   listRestaurants,
   startPublish,
 } from "@/lib/api";
@@ -26,6 +28,7 @@ import {
   type Menu,
   type PublishJob,
   type RestaurantSummary,
+  type Subscription,
 } from "@/lib/types";
 import "./console.css";
 
@@ -58,6 +61,7 @@ export default function Console() {
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [sub, setSub] = useState<Subscription | null>(null);
 
   const fileInput = useRef<HTMLInputElement>(null);
 
@@ -99,6 +103,13 @@ export default function Console() {
   useEffect(() => {
     if (session) load(true);
   }, [session, load]);
+
+  // Separate from the restaurant list on purpose: if the billing endpoint
+  // fails, the console still works. A billing check must never be able to
+  // lock someone out of their own menus.
+  useEffect(() => {
+    if (session) getSubscription().then(setSub).catch(() => setSub(null));
+  }, [session]);
 
   // The API sleeps after 15 idle minutes and takes up to a minute to wake.
   // Saying so beats a spinner that looks stuck.
@@ -265,6 +276,8 @@ export default function Console() {
       </header>
 
       <div className="shell">
+        <TrialNotice sub={sub} />
+
         {/* ------------------------------------------------------ my menus */}
         {stage === "list" && (
           <section className="intro">

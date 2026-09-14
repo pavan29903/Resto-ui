@@ -1,0 +1,83 @@
+/* Back-office styling: plain, dense, unbranded.
+   This screen is a tool, not a product surface — it borrows the console's
+   tokens so it stays readable in both themes, and spends nothing on polish
+   beyond that. */
+
+.adminbar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-block-end: 1.2rem;
+}
+
+.adminbar .field { inline-size: auto; }
+
+.okbox {
+  margin-block-end: 1rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--r-md);
+  border: 1px solid color-mix(in srgb, var(--veg) 45%, transparent);
+  background: color-mix(in srgb, var(--veg) 12%, transparent);
+  color: var(--ink);
+  font-size: var(--t-sm);
+}
+
+.atable {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: var(--t-sm);
+  margin-block-end: 2.5rem;
+}
+
+.atable th {
+  text-align: start;
+  font-size: var(--t-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  padding-block-end: 0.5rem;
+  border-block-end: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.atable td {
+  padding-block: 0.7rem;
+  border-block-end: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+/* The two most urgent states carry colour; the rest stay quiet so the
+   colour actually means something. */
+.astate {
+  font-size: var(--t-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.astate--grace { color: var(--warn); }
+.astate--expired { color: var(--danger); }
+
+.arow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.manual {
+  max-inline-size: 34rem;
+  padding-block-start: 1.4rem;
+  border-block-start: 1px solid var(--line);
+  margin-block-end: 4rem;
+}
+
+.manual .field { flex: 1; min-inline-size: 12rem; }
+.manual .arow { margin-block-start: 0.5rem; }
+
+/* A table of four columns does not fit a phone. Let it scroll rather than
+   crushing the buttons into unreadable stacks. */
+@media (max-width: 46rem) {
+  .atable { display: block; overflow-x: auto; white-space: nowrap; }
+}

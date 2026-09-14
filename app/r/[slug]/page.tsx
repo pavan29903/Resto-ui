@@ -66,7 +66,26 @@ export default async function MenuPage({ params }: Params) {
   const total = sections.reduce((n, s) => n + s.items.length, 0);
 
   return (
-    <div className="menu-page">
+    <div className={`menu-page${data.dimmed ? " menu-page--dimmed" : ""}`}>
+      {/* Shown when a restaurant's plan has been over for weeks. It says
+          nothing about billing: a diner is a stranger to that arrangement,
+          and "this restaurant hasn't paid" would embarrass the restaurant in
+          front of its own customer rather than prompt anyone to act. It reads
+          as a technical fault, and points them at the person who can actually
+          help — a server standing three feet away. */}
+      {data.dimmed && (
+        <div className="lapsed" role="alert">
+          <div className="lapsed__card">
+            <p className="lapsed__title">This menu isn&apos;t available</p>
+            <p className="lapsed__body">
+              Sorry — we can&apos;t show {name}&apos;s menu right now. Please
+              ask a member of staff for a menu, and let them know the code
+              on the table isn&apos;t working.
+            </p>
+          </div>
+        </div>
+      )}
+
       <header className="masthead">
         <div className="masthead__inner">
           {logo && (

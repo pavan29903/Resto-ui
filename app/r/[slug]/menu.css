@@ -8,6 +8,53 @@
   padding-block-end: calc(5.5rem + env(safe-area-inset-bottom));
 }
 
+/* --- lapsed menu ----------------------------------------------------------
+   Blurred rather than blank. A blank page reads as "this restaurant's site is
+   broken"; a blurred one is visibly a menu that isn't being shown, so the
+   diner knows to ask a server rather than giving up.
+
+   The blur is decorative only — the notice carries the whole message in plain
+   text, so screen readers get it regardless of any visual effect. */
+
+.menu-page--dimmed > *:not(.lapsed) {
+  filter: blur(7px) saturate(0.5);
+  pointer-events: none;
+  user-select: none;
+}
+
+.lapsed {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: clamp(0.9rem, 4vw, 1.5rem);
+  background: color-mix(in srgb, var(--ground) 72%, transparent);
+}
+
+.lapsed__card {
+  max-inline-size: 24rem;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 1.6rem 1.4rem;
+  box-shadow: var(--shadow-md);
+}
+
+.lapsed__title {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: var(--t-xl);
+  line-height: 1.15;
+  margin-block-end: 0.5rem;
+}
+
+.lapsed__body {
+  font-size: var(--t-sm);
+  color: var(--ink-soft);
+  text-wrap: pretty;
+}
+
 /* --- masthead ------------------------------------------------------------ */
 
 .masthead {

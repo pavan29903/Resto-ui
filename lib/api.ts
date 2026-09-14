@@ -6,6 +6,7 @@ import type {
   PublicMenu,
   PublishJob,
   RestaurantSummary,
+  Subscription,
   DishPhoto,
 } from "./types";
 
@@ -78,6 +79,54 @@ export async function extractMenu(files: File[]): Promise<ExtractResponse> {
       method: "POST",
       headers: await authHeader(),
       body: form,
+    }),
+  );
+}
+
+/* --- admin -----------------------------------------------------------------
+   These two carry the admin token rather than a Supabase session, because
+   they are for whoever runs RestoFood, not for a restaurant. The token is
+   typed into the admin page and kept in that browser — it is never bundled
+   into the deployed JavaScript. */
+
+export type ExpiringOwner = {
+  email: string;
+  status: Subscription["status"];
+  days_left: number;
+  expires_on: string | null;
+};
+
+export async function adminExpiring(
+  token: string,
+  withinDays = 7,
+): Promise<{ count: number; owners: ExpiringOwner[] }> {
+  return unwrap(
+    await fetch(`${API}/api/internal/expiring?within_days=${withinDays}`, {
+      headers: { "X-Admin-Token": token },
+      cache: "no-store",
+    }),
+  );
+}
+
+export async function adminMarkPaid(
+  token: string,
+  email: string,
+  months: number,
+): Promise<Subscription & { email: string }> {
+  return unwrap(
+    await fetch(
+      `${API}/api/internal/owners/${encodeURIComponent(email)}/paid?months=${months}`,
+      { method: "POST", headers: { "X-Admin-Token": token } },
+    ),
+  );
+}
+
+/** How long this owner has left. Drives the trial banner and the lock. */
+export async function getSubscription(): Promise<Subscription> {
+  return unwrap(
+    await fetch(`${API}/api/me/subscription`, {
+      headers: await authHeader(),
+      cache: "no-store",
     }),
   );
 }

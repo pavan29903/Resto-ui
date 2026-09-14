@@ -106,6 +106,45 @@
   background: color-mix(in srgb, var(--warn) 10%, transparent);
 }
 
+/* --- trial / renewal notice -----------------------------------------------
+   Shown only inside the last week of a trial, or once a plan has lapsed. A
+   banner on every visit stops being read by the third day, and then isn't
+   seen on the day it matters. */
+
+.notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem;
+  margin-block-start: 1.2rem;
+  padding: 0.85rem 1.1rem;
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: var(--r-md);
+}
+
+.notice__body {
+  flex: 1;
+  min-inline-size: 14rem;
+  font-size: var(--t-sm);
+  color: var(--ink-soft);
+}
+
+.notice__body strong { color: var(--ink); }
+
+/* Lapsed, still editable. */
+.notice--warn {
+  border-color: color-mix(in srgb, var(--warn) 50%, transparent);
+  background: color-mix(in srgb, var(--warn) 10%, transparent);
+}
+
+/* Editing paused. Red for the state, not for the menu — which is still live,
+   and the wording says so. */
+.notice--stop {
+  border-color: color-mix(in srgb, var(--danger) 45%, transparent);
+  background: var(--danger-soft);
+}
+
 /* --- intro ---------------------------------------------------------------- */
 
 .intro {

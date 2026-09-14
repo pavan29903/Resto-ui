@@ -7,3 +7,6 @@ build/
 next-env.d.ts
 *.tsbuildinfo
 .DS_Store
+
+# Local Claude Code config and skills — useful on this machine, noise in the repo.
+.claude/

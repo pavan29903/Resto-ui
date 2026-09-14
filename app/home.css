@@ -938,20 +938,99 @@
 
 /* --- pricing -------------------------------------------------------------- */
 
+/* The anchor. Set at reading size rather than as a headline: it is a fact
+   being pointed out, not a slogan being shouted. */
+.anchor {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.35rem, 3.4vw, 1.9rem);
+  line-height: 1.2;
+  text-align: center;
+  text-wrap: balance;
+  max-inline-size: 30ch;
+  margin-inline: auto;
+}
+
+.anchor__sub {
+  margin: 0.5rem auto 2rem;
+  text-align: center;
+  font-size: var(--t-sm);
+  color: var(--ink-muted);
+}
+
+/* Two terms of one product, so two columns — and narrow, so they read as a
+   choice between two things rather than a wall of plans. */
 .tiers {
   display: grid;
   gap: 1rem;
+  max-inline-size: 40rem;
+  margin-inline: auto;
 }
 
-@media (min-width: 52rem) {
-  .tiers { grid-template-columns: repeat(3, 1fr); align-items: stretch; }
+@media (min-width: 44rem) {
+  .tiers { grid-template-columns: repeat(2, 1fr); align-items: stretch; }
 }
 
 .tier {
   padding: clamp(1.4rem, 3vw, 1.9rem);
   display: flex;
   flex-direction: column;
+  gap: 0.35rem;
+  text-align: center;
+}
+
+.tier__save {
+  display: block;
+  margin-block-start: 0.35rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* --- what both include ---------------------------------------------------- */
+
+.included {
+  max-inline-size: 40rem;
+  margin: 1.6rem auto 0;
+  padding: clamp(1.3rem, 3vw, 1.7rem);
+  border-block-start: 1px solid var(--line);
+}
+
+.included__head {
+  font-size: var(--t-xs);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  text-align: center;
+  margin-block-end: 1rem;
+}
+
+.included__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+  font-size: var(--t-sm);
+  color: var(--ink-soft);
+}
+
+.included__list li {
+  display: flex;
   gap: 0.6rem;
+  align-items: baseline;
+}
+
+.included__list li::before {
+  content: "—";
+  color: var(--accent);
+  flex: none;
+}
+
+.included__ask {
+  margin-block-start: 1.3rem;
+  text-align: center;
+  font-size: var(--t-sm);
+  color: var(--ink-muted);
 }
 
 /* The recommended plan is lifted and outlined, not shouted about. */
@@ -973,35 +1052,13 @@
 
 .tier__price {
   font-family: var(--font-display), Georgia, serif;
-  font-size: clamp(2rem, 5vw, 2.5rem);
+  font-size: clamp(2.2rem, 6vw, 3rem);
   line-height: 1;
 }
 
 .tier__per { font-size: var(--t-sm); color: var(--ink-muted); font-weight: 400; }
 
-.tier__list {
-  list-style: none;
-  margin: 0.4rem 0 0;
-  padding: 0;
-  display: grid;
-  gap: 0.42rem;
-  font-size: var(--t-sm);
-  color: var(--ink-soft);
-}
-
-.tier__list li {
-  display: flex;
-  gap: 0.55rem;
-  align-items: baseline;
-}
-
-.tier__list li::before {
-  content: "—";
-  color: var(--accent);
-  flex: none;
-}
-
-.tier__cta { margin-block-start: auto; padding-block-start: 1rem; }
+.tier__cta { margin-block-start: auto; padding-block-start: 1.2rem; }
 
 /* --- close ---------------------------------------------------------------- */
 

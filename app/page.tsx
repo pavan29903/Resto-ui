@@ -28,55 +28,46 @@ const STEPS: [string, string, string][] = [
   ],
 ];
 
-/** Placeholder figures — change these before the pricing page goes public.
- *  The structure is what matters now: three tiers, the middle one carrying
- *  the recommendation, and a slot for a real checkout on each. */
-const TIERS: {
+/** Two terms of one product — not two products. The feature list is therefore
+ *  printed once, below both cards, instead of being padded out per column to
+ *  make the dearer one look fuller than it is. */
+const TERMS: {
   tag?: string;
   name: string;
   price: string;
   per: string;
-  lines: string[];
-  cta: string;
+  note?: string;
   lead?: boolean;
 }[] = [
   {
-    name: "Try it",
-    price: "₹0",
-    per: "no card needed",
-    lines: [
-      "One restaurant",
-      "Read the menu card and check it",
-      "Your menu live on a RestoFood address",
-    ],
-    cta: "Start free",
+    name: "6 months",
+    price: "₹1,999",
+    per: "₹333 a month",
   },
   {
-    tag: "Most restaurants",
-    name: "One kitchen",
-    price: "₹499",
-    per: "per month",
-    lines: [
-      "Everything in Try it",
-      "Your own subdomain and printable table codes",
-      "Photographs for every dish, replaceable",
-      "Change prices any time, no reprinting",
-    ],
-    cta: "Choose this",
+    tag: "Best value",
+    name: "1 year",
+    price: "₹2,999",
+    per: "₹250 a month",
+    note: "Save ₹999",
     lead: true,
   },
-  {
-    name: "More than one outlet",
-    price: "Let's talk",
-    per: "priced per branch",
-    lines: [
-      "Every outlet under one login",
-      "One menu pushed to several branches",
-      "Help moving your existing menus across",
-    ],
-    cta: "Talk to us",
-  },
 ];
+
+const INCLUDED: string[] = [
+  "Your menu at your own address — spicegarden.restofood.in",
+  "A photograph for every dish, replaceable with your own",
+  "Printable codes for the tables",
+  "Change a price in ten seconds, with nothing to reprint",
+];
+
+/** Replace with the number you actually answer. WhatsApp rather than a form
+ *  or an email address: it is where this customer already does business, and
+ *  a reply arrives in seconds instead of a day. */
+const WHATSAPP = "918466901383";
+const WHATSAPP_LINK = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(
+  "Hi — I run a restaurant and I'd like to put my menu on RestoFood.",
+)}`;
 
 /** The same four dishes appear on the paper and on the phone. That repetition
  *  is the whole argument of the picture: nothing was invented in between, the
@@ -361,8 +352,21 @@ export default function Home() {
             </div>
           </Reveal>
 
+          {/* The comparison that matters. A cafe is not choosing between this
+              and other software — it is choosing between this and printing
+              the cards again, which costs more. */}
+          <Reveal>
+            <p className="anchor">
+              One reprint of your menu cards costs more than a year of
+              RestoFood.
+            </p>
+            <p className="anchor__sub">
+              Every plan starts with a free month. No card, nothing to cancel.
+            </p>
+          </Reveal>
+
           <div className="tiers">
-            {TIERS.map((t, i) => (
+            {TERMS.map((t, i) => (
               <Reveal
                 as="article"
                 className={`tier glass${t.lead ? " tier--lead" : ""}`}
@@ -371,26 +375,45 @@ export default function Home() {
               >
                 {t.tag ? <p className="tier__tag">{t.tag}</p> : null}
                 <h2 className="tier__name">{t.name}</h2>
-                <p className="tier__price">
-                  {t.price} <span className="tier__per">{t.per}</span>
+                <p className="tier__price">{t.price}</p>
+                <p className="tier__per">
+                  {t.per}
+                  {t.note ? <span className="tier__save">{t.note}</span> : null}
                 </p>
-                <ul className="tier__list">
-                  {t.lines.map((l) => (
-                    <li key={l}>{l}</li>
-                  ))}
-                </ul>
                 <p className="tier__cta">
                   <Link
                     className={`btn btn--sm${t.lead ? " btn--glow" : ""}`}
                     href="/dashboard"
                     style={{ textDecoration: "none" }}
                   >
-                    {t.cta}
+                    Start free month
                   </Link>
                 </p>
               </Reveal>
             ))}
           </div>
+
+          <Reveal>
+            <div className="included">
+              <p className="included__head">Both include</p>
+              <ul className="included__list">
+                {INCLUDED.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+              <p className="included__ask">
+                More than one outlet, or a question first?{" "}
+                <a
+                  className="linkbtn"
+                  href={WHATSAPP_LINK}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Ask on WhatsApp
+                </a>
+              </p>
+            </div>
+          </Reveal>
         </div>
       </section>
 
