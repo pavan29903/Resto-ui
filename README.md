@@ -1,163 +1,113 @@
 # RestoFood — web
 
-The customer-facing half of RestoFood. Next.js, deployed on Vercel.
+**Photograph your menu card. Get a menu your customers open by scanning a code
+on the table — with a photograph of every dish.**
 
-It serves three different people from one codebase:
+Live at **[restofood.in](https://restofood.in)** · API:
+**[Resto-api](https://github.com/pavan29903/Resto-api)**
+
+---
+
+## The problem
+
+India has millions of small restaurants still handing out laminated paper menu
+cards. Every time a price moves, the owner reprints the batch — ₹3,000–5,000, a
+few times a year. The cafe two doors down has a QR code on every table and
+looks like a different class of business.
+
+Closing that gap normally takes a designer, a photographer and somebody who can
+operate a CMS. A twelve-table cafe has none of those.
+
+**RestoFood needs one thing: a photograph of the menu card they already own.**
+
+## What this repository is
+
+The half of the product people actually look at. One Next.js app serving three
+very different audiences:
 
 | Route | Who | What they're doing |
 |---|---|---|
 | `/` | someone deciding | Reading the pitch |
-| `/dashboard` | the restaurant owner | Uploading a menu card, checking prices, publishing |
-| `/r/[slug]` | a diner at the table | Browsing the menu they just scanned |
+| `/dashboard` | the restaurant owner | Photographing a card, checking prices, publishing |
+| `/r/[slug]` | **a diner at the table** | Reading the menu they just scanned |
 
-Once a domain is attached, each restaurant also answers on its own subdomain —
-`spicegarden.restofood.in` — which is the same `/r/[slug]` page reached through
-a rewrite in [`middleware.ts`](middleware.ts).
+Plus every restaurant's own address — `spicegarden.restofood.in` — served by
+the same app through a middleware rewrite behind a wildcard certificate.
 
-The API lives in a separate repository: **[Resto-api](https://github.com/pavan29903/Resto-api)**.
+## Designed for the actual conditions
 
----
+The diner's menu is the screen that matters, and it gets read **one-handed, at
+a table, on a mid-range Android phone, often in low light, often by someone
+who's hungry.** Every decision answers to that: a two-column grid so dishes are
+thumb-sized, photographs that load fast on café wifi, the green-square and
+brown-triangle veg marks every Indian menu carries by law, and a dark theme
+that isn't an afterthought because half of them will be reading it in a dim
+room.
 
-## Running it locally
-
-You need the API running first — the console can't sign in without it.
-
-```bash
-# 1. install
-npm install
-
-# 2. configure
-cp .env.local.example .env.local     # PowerShell: Copy-Item .env.local.example .env.local
-
-# 3. run
-npm run dev                          # → http://localhost:5005
-```
-
-Port 5005 rather than Next's default 3000, which tends to be occupied. The
-API allows both from a browser, so either works if you change it.
-
-`.env.local` needs three values:
-
-```ini
-NEXT_PUBLIC_API_URL=http://localhost:8222
-NEXT_PUBLIC_SUPABASE_URL=https://<project>.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
-```
-
-Everything here is public by design — the anon key is meant to reach the
-browser. The service key never appears in this repository.
-
-**Testing subdomains locally** needs no DNS setup: `spice-garden.localhost:3000`
-resolves on its own, and the middleware treats it exactly as it will treat a
-real subdomain.
-
-```bash
-npm run typecheck    # tsc --noEmit
-npm run build        # production build
-```
+The owner's console is built for someone between services on a cheap laptop,
+who has never used a CMS and shouldn't have to learn one. It explains itself in
+plain sentences — "Photograph your menu card", not "Upload asset" — and nothing
+goes live until they have seen every dish and price.
 
 ---
 
-## How it's put together
+## What's interesting underneath
 
-```
-app/
-  page.tsx            the landing page
-  home.css
-  dashboard/          the owner's console — upload, review, publish, edit
-  r/[slug]/           the diner's menu
-  globals.css         design tokens, both themes, shared primitives
-  layout.tsx          fonts, and the script that prevents a theme flash
-components/
-  MenuEditor          the dish table, shared by first review and later edits
-  EditRestaurant      name, address, WhatsApp, logo, and the menu
-  DishPhotoCell       replace one dish's photograph
-  LogoUpload · SignIn · ThemeToggle
-lib/
-  api.ts              every call to the API, typed
-  types.ts            mirrors the API's schema
-  supabase.ts         browser auth client
-middleware.ts         subdomain → restaurant
-```
+**A design system with a reason for every value.** Warm paper and saffron, not
+the cool greys most dashboards default to, because food photography looks
+refrigerated against grey. The accent is pinned at the exact value where it
+clears 4.5:1 on the paper ground. Dark mode is a *warm* near-black, so a diner
+flipping themes at the table sees the same restaurant rather than a different
+app. Every colour is a token defined once — which is why retheming the entire
+product was an edit to three blocks and nothing else.
 
-Auth is Supabase. The browser holds the session; every request to the API
-carries its token, and the API verifies it against Supabase's public keys.
+**Typography chosen under a real constraint.** Rozha One and Mukta both carry
+**Devanagari as well as Latin**, because real Indian menus are bilingual and a
+face that renders tofu boxes for half the dishes isn't a candidate, however
+handsome it is.
 
----
+**A signature that isn't a gradient blob.** Behind the landing hero is a
+*jali* — the pierced stone lattice of Mughal architecture, which exists to let
+warm light through a wall. One inline SVG, a few hundred bytes. It replaced
+blurred aurora gradients, which are the default decoration of every AI-era
+landing page and say nothing about an Indian restaurant.
 
-## Design
+**Multi-tenancy in the edge middleware.** A subdomain is rewritten onto
+`/r/[slug]` — so the diner sees the restaurant's own address, not a path in
+somebody else's system. Both forms keep serving forever, which means a QR code
+printed before the domain existed never goes dead. Around thirty reserved
+subdomains can never be claimed by a restaurant.
 
-The visual system is documented here because it's easy to erode without a
-written reason for each decision.
+**Loading states that tell the truth.** An empty list and a pending request
+used to look identical, so the console told owners they had no menus while it
+was still fetching. Now: skeletons shaped like the real cards, a genuine error
+state with a retry, and — after four seconds — an honest line explaining that
+the free-tier server sleeps and this first load can take a minute. A spinner
+that looks stuck is worse than a sentence explaining why.
 
-**Colour — paper and saffron.** The warm off-white of a printed menu card
-gives the neutrals; saffron, the colour of the food and of the country, gives
-the accent. Warm throughout, because the product is about appetite and cool
-greys make food photography look refrigerated. Dark is a *warm* dark — a
-brown-biased near-black rather than the usual blue-black — so a diner
-switching themes at the table sees the same restaurant, not a different app.
-
-The accent sits at `#b8500b` rather than a brighter burnt orange because that
-is where it clears 4.5:1 against the paper ground, and the accent carries
-body-sized link text, not just headings. On dark it lightens to `#f0a35a`;
-the darker value would vanish into the ground.
-
-**One palette, three surfaces.** The landing page, the console and the
-diner's menu all read the same tokens. Every value is a custom property
-defined once in `globals.css` and repeated only in the two theme overrides;
-components read `var(--token)` and never a literal. That is what makes
-retheming the entire product an edit to three blocks — which is exactly how
-this palette replaced the previous one.
-
-Two deliberate exceptions, both documented where they appear. The paper card
-in the landing-page hero keeps literal colours, because it *depicts* printed
-paper and paper is white under a dark theme too; likewise the phone mock,
-which is a picture of a device rather than themed UI. And the QR code in the
-console has a hardcoded white quiet zone — on a dark surface it would not
-scan.
-
-**The jali.** Behind the hero is a lattice of interlocking circles — the
-pierced stone screen of Mughal architecture, whose purpose is to let warm
-light through a wall. It does the same job here: the page's glow is behind it
-and shines through. It is drawn as one inline SVG pattern, so it costs a few
-hundred bytes and no request. It replaced a set of blurred gradient blobs,
-which are the default decoration of every AI-era landing page and say nothing
-about an Indian restaurant.
-
-**Type — Rozha One and Mukta.** One characterful display face, used once per
-page, and one workhorse. Both were chosen under a constraint that rules out
-most handsome faces: **they carry Devanagari as well as Latin.** Real Indian
-menus are bilingual, and a face that renders tofu boxes for half the menu is
-not a candidate. Self-hosted at build time — no runtime font CDN.
-
-**The leader rail.** Printed menus join a dish to its price with a row of
-dots. The landing page uses that device to join a claim to its answer. It is
-the one place the design spends its boldness.
-
-**Themes.** Light, system-dark, and an explicit choice are all handled, and a
-script in `layout.tsx` applies the stored preference before first paint —
-without it, a diner who chose dark gets a white flash on every load, worst
-exactly where it is most visible.
-
-**No Tailwind**, deliberately: utility defaults are what produced the
-templated first draft this replaced.
+**No Tailwind**, deliberately. Utility defaults are what produced the templated
+first draft this replaced.
 
 ---
 
-## Deploying
+## Built with
 
-Vercel builds this from GitHub on every push to `main`. Set the same three
-environment variables in the project settings, pointing at the deployed API
-rather than localhost.
+Next.js 15 (App Router) · React 19 · TypeScript · Supabase Auth · Vercel
 
-Full instructions, including the domain and wildcard certificate:
-[`DEPLOY.md`](https://github.com/pavan29903/Resto-api/blob/main/DEPLOY.md) in
-the API repository.
+Two repositories, deliberately: the web app and the API deploy independently.
+
+## Built, and not yet built
+
+**Working today:** menu extraction and review, dish photographs, per-dish
+replacement, logos, publishing, QR codes and printable table cards, a menu per
+subdomain, light and dark themes, owner accounts, trials and renewals, and a
+back office for collecting payment.
+
+**Not built:** ordering. A diner reads the menu and then speaks to a server.
+There's no cart here and no orders table in the API — that's the next
+substantial piece of work, and it isn't claimed as "coming soon" on a page
+where somebody might believe it.
 
 ---
 
-## Not built yet
-
-Ordering. A diner can read the menu and see every dish, but cannot place an
-order from it — there is no cart here and no orders table in the API. The menu
-currently ends at *"Ready to order? Call your server."*
+**Running it locally:** [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)
