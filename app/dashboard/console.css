@@ -106,6 +106,55 @@
   background: color-mix(in srgb, var(--warn) 10%, transparent);
 }
 
+/* --- take a photo ---------------------------------------------------------
+   Hidden where the pointer is fine — a camera button is noise on a desktop,
+   and `capture` does nothing there anyway. `pointer: coarse` is the honest
+   test: it asks whether this is a touch device rather than guessing from a
+   user-agent string. */
+
+.shoot {
+  display: none;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 0.9rem;
+  margin-block-start: 0.9rem;
+}
+
+@media (pointer: coarse) {
+  .shoot { display: flex; }
+}
+
+/* --- chosen photos --------------------------------------------------------- */
+
+.pill--file {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-inline-end: 0.25rem;
+  max-inline-size: 100%;
+}
+
+.pill__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pill__x {
+  flex: none;
+  font: inherit;
+  font-size: 0.7rem;
+  line-height: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink-muted);
+  padding: 0.25rem;
+  border-radius: 999px;
+}
+
+.pill__x:hover { color: var(--danger); }
+
 /* --- trial / renewal notice -----------------------------------------------
    Shown only inside the last week of a trial, or once a plan has lapsed. A
    banner on every visit stops being read by the third day, and then isn't

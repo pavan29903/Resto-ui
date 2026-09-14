@@ -64,6 +64,7 @@ export default function Console() {
   const [sub, setSub] = useState<Subscription | null>(null);
 
   const fileInput = useRef<HTMLInputElement>(null);
+  const cameraInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const client = supabase();
@@ -136,10 +137,19 @@ export default function Console() {
       </main>
     );
 
-  function addFiles(list: FileList | null) {
-    if (!list) return;
-    setFiles(Array.from(list));
+  /** `append` for the camera, which can only take one shot at a time — a menu
+   *  card is often two or three pages, and replacing the previous photo on
+   *  every capture would make photographing a folded card impossible. The
+   *  file picker replaces, because there they can select several at once. */
+  function addFiles(list: FileList | null, append = false) {
+    if (!list || list.length === 0) return;
+    const picked = Array.from(list);
+    setFiles((current) => (append ? [...current, ...picked] : picked));
     setError(null);
+  }
+
+  function removeFile(index: number) {
+    setFiles((current) => current.filter((_, i) => i !== index));
   }
 
   async function readCard() {
@@ -462,21 +472,70 @@ export default function Console() {
               <span className="drop__lead">
                 {files.length ? "Choose different photos" : "Drop your menu photos here"}
               </span>
-              <span className="drop__hint">or click to browse</span>
+              <span className="drop__hint">or tap to browse</span>
               <input
                 ref={fileInput}
                 type="file"
                 accept="image/*"
                 multiple
                 hidden
-                onChange={(e) => addFiles(e.target.files)}
+                onChange={(e) => {
+                  addFiles(e.target.files);
+                  e.target.value = ""; // so re-picking the same file still fires
+                }}
+              />
+            </div>
+
+            {/* A separate input, because `capture` is what opens the camera
+                straight away — but on some browsers it also removes the
+                gallery option, so it must not be set on the picker above.
+                Hidden on devices with a fine pointer: a camera button is
+                noise on a desktop, where `capture` does nothing anyway. */}
+            <div className="shoot">
+              <button
+                className="btn btn--quiet"
+                onClick={() => cameraInput.current?.click()}
+              >
+                Take a photo
+              </button>
+              <span className="status">
+                {files.length
+                  ? "Take another for the next page."
+                  : "Point at the card. You can add more pages after."}
+              </span>
+              <input
+                ref={cameraInput}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                hidden
+                onChange={(e) => {
+                  addFiles(e.target.files, true);
+                  e.target.value = "";
+                }}
               />
             </div>
 
             {files.length > 0 && (
               <div className="filechips">
-                {files.map((f) => (
-                  <span className="pill" key={f.name}>{f.name}</span>
+                {files.map((f, i) => (
+                  <span className="pill pill--file" key={`${f.name}-${i}`}>
+                    {/* Camera files are all named "image.jpg", so number them
+                        — otherwise three photos of three pages look identical
+                        and there is no way to tell which to remove. */}
+                    <span className="pill__name">
+                      {files.length > 1 ? `${i + 1}. ` : ""}
+                      {f.name}
+                    </span>
+                    <button
+                      className="pill__x"
+                      onClick={() => removeFile(i)}
+                      aria-label={`Remove photo ${i + 1}`}
+                      title="Remove this photo"
+                    >
+                      ✕
+                    </button>
+                  </span>
                 ))}
               </div>
             )}
