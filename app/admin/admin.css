@@ -66,6 +66,40 @@
   align-items: center;
 }
 
+/* Their web address, shown as the address rather than as a "slug" — the
+   suffix sits in the field so there is nothing to guess about what to type. */
+.addr {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.addr .field { inline-size: 12rem; }
+
+.addr__suffix {
+  font-size: var(--t-sm);
+  color: var(--ink-muted);
+}
+
+.handrow { margin-block-end: 0.9rem; }
+.handrow .label { display: block; margin-block-end: 0.3rem; }
+.handrow .field { max-inline-size: 22rem; }
+
+.who {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.who__missing {
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: 0.05rem 0.35rem;
+}
+
 .manual {
   max-inline-size: 34rem;
   padding-block-start: 1.4rem;

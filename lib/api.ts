@@ -91,6 +91,8 @@ export async function extractMenu(files: File[]): Promise<ExtractResponse> {
 
 export type ExpiringOwner = {
   email: string;
+  /** Digits with country code, ready for a wa.me link. Null if never captured. */
+  phone: string | null;
   status: Subscription["status"];
   days_left: number;
   expires_on: string | null;
@@ -105,6 +107,30 @@ export async function adminExpiring(
       headers: { "X-Admin-Token": token },
       cache: "no-store",
     }),
+  );
+}
+
+/** Give a restaurant you built to the person who runs it. Keeps the slug, the
+ *  menu and the QR code — only the owner changes. */
+export async function adminHandover(
+  token: string,
+  slug: string,
+  email: string,
+  phone?: string,
+): Promise<{
+  slug: string;
+  now_owned_by: string;
+  phone: string | null;
+  account_existed: boolean;
+  awaiting_signup: boolean;
+}> {
+  const params = new URLSearchParams({ email });
+  if (phone) params.set("phone", phone);
+  return unwrap(
+    await fetch(
+      `${API}/api/internal/restaurants/${encodeURIComponent(slug)}/handover?${params}`,
+      { method: "POST", headers: { "X-Admin-Token": token } },
+    ),
   );
 }
 
