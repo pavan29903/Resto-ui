@@ -53,7 +53,13 @@ export function middleware(request: NextRequest) {
   // The owner console and the back office stay reachable from any host.
   // Without this, an owner who types their own restaurant's address and then
   // goes to /dashboard gets rewritten into /r/<slug>/dashboard, which is a 404.
-  if (url.pathname.startsWith("/dashboard") || url.pathname.startsWith("/admin")) {
+  // /reset is here too: a recovery email lands on whatever host it was asked
+  // for, and an owner may well have asked from their own restaurant's address.
+  if (
+    url.pathname.startsWith("/dashboard") ||
+    url.pathname.startsWith("/admin") ||
+    url.pathname.startsWith("/reset")
+  ) {
     return NextResponse.next();
   }
 

@@ -10,10 +10,13 @@ export default function LogoUpload({
   initial,
   onChange,
   compact = false,
+  name = "",
 }: {
   restaurantId: string;
   initial: string | null;
   onChange?: (url: string | null) => void;
+  /** The restaurant's name, used for the monogram when there's no logo yet. */
+  name?: string;
   /** Thumbnail only, for a list of restaurants. The full version explains what
    *  a logo is and where it appears — useful once, but repeated down a list it
    *  becomes the loudest thing on every card. Removing a logo stays in Edit,
@@ -71,7 +74,7 @@ export default function LogoUpload({
     return (
       <>
         <button
-          className="logopick"
+          className={`logopick${logo ? "" : " logopick--empty"}`}
           disabled={busy}
           onClick={() => input.current?.click()}
           title={logo ? "Replace this logo" : "Add a logo"}
@@ -80,9 +83,15 @@ export default function LogoUpload({
             // eslint-disable-next-line @next/next/no-img-element
             <img src={logo} alt="" />
           ) : (
-            <span className="logopick__empty">Logo</span>
+            // The restaurant's initial, not the word "Logo". An empty box
+            // labelled with the name of the thing that's missing reads as
+            // something that failed to load; a monogram reads as a choice,
+            // and still invites a click.
+            <span className="logopick__initial" aria-hidden="true">
+              {(name || "?").trim().charAt(0).toUpperCase()}
+            </span>
           )}
-          <span className="logopick__hint">{busy ? "…" : logo ? "Change" : "Add"}</span>
+          <span className="logopick__hint">{busy ? "…" : logo ? "Change" : "Add logo"}</span>
         </button>
         {picker}
         {error && <p className="status status--error">{error}</p>}

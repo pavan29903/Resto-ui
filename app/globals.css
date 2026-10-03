@@ -246,6 +246,37 @@ a {
   background: var(--surface-sunk);
 }
 
+/* --- theme toggle ---------------------------------------------------------
+   Shared: the diner's menu, the owner's console and the password-reset page
+   all show it. It used to be styled inside the menu page's stylesheet, which
+   meant it rendered as a bare browser button everywhere else. */
+
+.themetoggle {
+  flex: none;
+  display: grid;
+  place-items: center;
+  /* 40px: a thumb target on a phone, not a mouse target. */
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  padding: 0;
+  color: var(--ink-soft);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.themetoggle:hover {
+  color: var(--accent);
+  background: var(--surface-sunk);
+  border-color: var(--line-strong);
+}
+
+.themetoggle:active {
+  transform: scale(0.94);
+}
+
 .field {
   font: inherit;
   width: 100%;

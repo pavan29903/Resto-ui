@@ -15,7 +15,6 @@ import {
   deleteRestaurant,
   extractMenu,
   fetchQrObjectUrl,
-  getConfig,
   getPublishJob,
   getSubscription,
   listRestaurants,
@@ -24,7 +23,6 @@ import {
 import {
   countItems,
   symbolFor,
-  type ApiConfig,
   type Menu,
   type PublishJob,
   type RestaurantSummary,
@@ -37,7 +35,6 @@ type Stage = "list" | "upload" | "review" | "publish" | "edit";
 export default function Console() {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
-  const [config, setConfig] = useState<ApiConfig | null>(null);
 
   const [stage, setStage] = useState<Stage>("list");
   const [restaurants, setRestaurants] = useState<RestaurantSummary[]>([]);
@@ -74,10 +71,6 @@ export default function Console() {
     });
     const { data: sub } = client.auth.onAuthStateChange((_e, s) => setSession(s));
     return () => sub.subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    getConfig().then(setConfig).catch(() => setConfig(null));
   }, []);
 
   /** `withSkeleton` only on the first fetch. Later refreshes — after a publish,
@@ -254,19 +247,11 @@ export default function Console() {
           >
             RestoFood
           </button>
-          {/* Three things, three weights. The account is the owner's own
-              identity and gets a real control; what the servers are running is
-              reference detail, kept quiet and dropped on small screens; signing
-              out is rare and shouldn't compete with either. */}
+          {/* No provider or model names here. "gemini-flash-latest · pexels
+              photos" is true, and completely meaningless to a restaurant owner
+              — it only ever told the developer something, and /api/config
+              tells them the same thing more reliably. */}
           <div className="topbar__right">
-            {config && (
-              <p className="topbar__meta" title="Providers this menu reader uses">
-                <span>{config.extraction_model}</span>
-                <span aria-hidden="true">·</span>
-                <span>{config.image_provider} photos</span>
-              </p>
-            )}
-
             <span className="account" title={session.user.email}>
               <span className="account__mark" aria-hidden="true">
                 {(session.user.email ?? "?").charAt(0).toUpperCase()}
@@ -363,6 +348,7 @@ export default function Console() {
                           compact
                           restaurantId={r.id}
                           initial={r.logo_url}
+                          name={r.name}
                           onChange={() => refresh()}
                         />
                         <div className="rcard__id">

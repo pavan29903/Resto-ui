@@ -43,6 +43,7 @@ export default function EditRestaurant({
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filling, setFilling] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     getRestaurant(restaurantId)
@@ -109,6 +110,38 @@ export default function EditRestaurant({
       setError(err instanceof Error ? err.message : "Could not start that.");
     } finally {
       setFilling(false);
+    }
+  }
+
+  /** Look for a fresh photo for every dish, replacing what's there.
+   *
+   *  Photos the owner uploaded themselves are never touched — the publish job
+   *  skips anything marked `owner`, because their own photo of their own dish
+   *  is better than anything a search will find.
+   *
+   *  Doubles as the way to move a menu's photos onto new storage: they are
+   *  fetched again and written wherever the API now points. */
+  async function refreshAllPhotos() {
+    if (
+      !confirm(
+        "Look for a new photo for every dish? Photos you uploaded yourself " +
+          "are kept. This takes a minute or two.",
+      )
+    )
+      return;
+    setRefreshing(true);
+    setError(null);
+    try {
+      await startPublish(restaurantId, {
+        generate_images: true,
+        max_images: 0,
+        replace_existing: true,
+      });
+      setSaved(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not start that.");
+    } finally {
+      setRefreshing(false);
     }
   }
 
@@ -208,6 +241,14 @@ export default function EditRestaurant({
           title="Finds photos for dishes that don't have one yet"
         >
           {filling ? "Finding photos…" : "Find photos for new dishes"}
+        </button>
+        <button
+          className="btn btn--quiet"
+          disabled={refreshing}
+          onClick={refreshAllPhotos}
+          title="Looks for a new photo for every dish. Yours are kept."
+        >
+          {refreshing ? "Refreshing…" : "Refresh all photos"}
         </button>
         <button className="linkbtn" onClick={onDone}>
           Back to your menus
